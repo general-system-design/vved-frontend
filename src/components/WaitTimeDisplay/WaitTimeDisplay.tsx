@@ -51,6 +51,8 @@ const Disclaimer = styled.div`
 
 
 
+
+
 interface WaitTimeDisplayProps {
   currentWaitTime: number;
 }

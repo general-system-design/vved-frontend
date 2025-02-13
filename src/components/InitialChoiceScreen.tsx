@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { theme } from '../styles/theme';
 import { WaitTimeDisplay } from './WaitTimeDisplay/WaitTimeDisplay';
 import { EmergencyBanner } from './shared/EmergencyBanner';
@@ -118,7 +118,7 @@ const Button = styled.button<{ variant: 'emergency' | 'regular' }>`
       : 'none'};
   border: ${props => props.variant === 'regular' ? `1.5px solid ${theme.colors.primary}` : 'none'};
   
-  ${props => props.variant === 'emergency' && `
+  ${props => props.variant === 'emergency' && css`
     animation: ${pulseAnimation} 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
 
     &:hover {
@@ -136,7 +136,7 @@ const Button = styled.button<{ variant: 'emergency' | 'regular' }>`
 
   &:hover {
     transform: translateY(-1px);
-    ${props => props.variant === 'regular' && `
+    ${props => props.variant === 'regular' && css`
       background: rgba(0, 102, 204, 0.05);
     `}
   }

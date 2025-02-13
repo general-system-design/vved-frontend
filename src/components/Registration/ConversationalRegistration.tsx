@@ -436,6 +436,10 @@ const TimeIcon = styled.span`
   color: ${theme.colors.primary};
 `;
 
+
+
+
+
 export const ConversationalRegistration = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -453,6 +457,7 @@ export const ConversationalRegistration = () => {
     handleAnswer,
     goBack,
     isComplete,
+    
   } = useRegistrationFlow();
 
   const handleInputChange = (field: keyof RegistrationData, value: string) => {
