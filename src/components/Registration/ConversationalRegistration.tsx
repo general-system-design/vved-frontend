@@ -562,11 +562,11 @@ export const ConversationalRegistration = () => {
           </Title>
           <Subtitle>
             {isEmergency
-              ? "Let's get you registered quickly so we can provide the care you need."
+              ? "We'll now collect some details to help us prepare for your consultation."
               : "Let's get you registered for your visit."}
           </Subtitle>
           <StartButton onClick={startRegistration}>
-            Start Registration
+            I'm ready to register
           </StartButton>
           <EstimatedTime>
             <TimeIcon>⏱</TimeIcon>
