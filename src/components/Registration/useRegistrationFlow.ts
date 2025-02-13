@@ -550,7 +550,7 @@ const registrationSteps: RegistrationStep[] = [
   }
 ];
 
-export const useRegistrationFlow = (isEmergency: boolean) => {
+export const useRegistrationFlow = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [formData, setFormData] = useState<RegistrationData>(initialData);
   const [error, setError] = useState<string | undefined>();

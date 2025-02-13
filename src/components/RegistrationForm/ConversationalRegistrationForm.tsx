@@ -186,9 +186,8 @@ export const ConversationalRegistrationForm = () => {
     error,
     progress,
     handleAnswer,
-    goBack,
     isComplete
-  } = useConversationFlow(isEmergency);
+  } = useConversationFlow();
 
   const startRegistration = () => {
     setShowWelcome(false);
