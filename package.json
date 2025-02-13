@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "serve": "vite preview",
+    "start": "serve -s dist"
   },
   "dependencies": {
     "@types/recharts": "^1.8.29",
