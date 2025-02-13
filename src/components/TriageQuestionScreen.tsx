@@ -1,9 +1,9 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { theme } from '../styles/theme';
 import { PageLayout } from './Layout/PageLayout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { triageQuestions, TriageQuestion, Severity } from '../data/triageQuestions';
-import { useState, useEffect } from 'react';
+import { triageQuestions, Severity } from '../data/triageQuestions';
+import { useState } from 'react';
 import { EmergencyBanner } from './shared/EmergencyBanner';
 import { Header } from './shared/Header';
 
@@ -242,16 +242,7 @@ interface TriageAnswers {
   [questionId: string]: boolean | number;
 }
 
-const getSeverityLabel = (severity: Severity): string => {
-  switch (severity) {
-    case 'high':
-      return 'Urgent';
-    case 'medium':
-      return 'Moderate';
-    case 'low':
-      return 'Non-urgent';
-  }
-};
+
 
 export const TriageQuestionScreen = () => {
   const navigate = useNavigate();
@@ -263,7 +254,7 @@ export const TriageQuestionScreen = () => {
   
   const isNewUser = searchParams.get('isNew') === 'true';
   const currentQuestion = triageQuestions[currentQuestionId];
-  const progress = Object.keys(answers).length * 10 + 30;
+  
   
   const baseQuestions = ['chest-pain', 'breathing', 'consciousness', 'bleeding', 'pain-level'];
   const currentQuestionIndex = baseQuestions.indexOf(currentQuestionId);

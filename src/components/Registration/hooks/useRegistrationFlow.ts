@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { RegistrationData, initialRegistrationData } from '../types';
 import { registrationSteps } from '../steps';
 
-export const useRegistrationFlow = (isEmergency: boolean) => {
+export const useRegistrationFlow = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [formData, setFormData] = useState<RegistrationData>(initialRegistrationData);
   const [error, setError] = useState<string | undefined>();

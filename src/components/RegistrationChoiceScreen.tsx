@@ -16,16 +16,7 @@ const fadeIn = keyframes`
   }
 `;
 
-const slideIn = keyframes`
-  from {
-    transform: translateX(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-`;
+
 
 const Container = styled.div`
   display: flex;
@@ -38,49 +29,6 @@ const Container = styled.div`
   justify-content: center;
   animation: ${fadeIn} 0.5s ease-out;
   padding-bottom: calc(${theme.spacing.xlarge} * 3);
-`;
-
-const BackButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: ${theme.spacing.small};
-  color: ${theme.colors.text.secondary};
-  font-size: ${theme.typography.fontSize.body};
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: ${theme.spacing.small};
-  margin: -${theme.spacing.small};
-  border-radius: ${theme.borderRadius.small};
-  transition: all 0.2s ease;
-  animation: ${slideIn} 0.3s ease-out;
-
-  &:hover {
-    color: ${theme.colors.text.primary};
-    background: rgba(0, 0, 0, 0.05);
-  }
-
-  &::before {
-    content: '←';
-    font-size: 20px;
-    line-height: 1;
-  }
-`;
-
-const TimeIndicator = styled.div`
-  color: rgba(255, 255, 255, 0.9);
-  font-size: ${theme.typography.fontSize.small};
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.small};
-  background: rgba(255, 255, 255, 0.1);
-  padding: ${theme.spacing.small} ${theme.spacing.medium};
-  border-radius: ${theme.borderRadius.small};
-  backdrop-filter: blur(8px);
-
-  &::before {
-    content: '⏱';
-  }
 `;
 
 const Title = styled.h1`

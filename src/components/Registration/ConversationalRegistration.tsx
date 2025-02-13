@@ -436,64 +436,6 @@ const TimeIcon = styled.span`
   color: ${theme.colors.primary};
 `;
 
-const StepIndicator = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.small};
-  padding: ${theme.spacing.medium};
-  background: white;
-  border-bottom: 1px solid ${theme.colors.text.disabled};
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-`;
-
-const Step = styled.div<{ active?: boolean; completed?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: ${props => 
-    props.active ? theme.colors.primary : 
-    props.completed ? theme.colors.text.primary :
-    theme.colors.text.disabled};
-  font-size: 12px;
-  white-space: nowrap;
-  padding: ${theme.spacing.small} 0;
-`;
-
-const StepNumber = styled.div<{ active?: boolean; completed?: boolean }>`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${props => 
-    props.active ? theme.colors.primary :
-    props.completed ? theme.colors.text.primary :
-    'transparent'};
-  color: ${props => 
-    (props.active || props.completed) ? 'white' : theme.colors.text.disabled};
-  border: 1.5px solid ${props => 
-    props.active ? theme.colors.primary :
-    props.completed ? theme.colors.text.primary :
-    theme.colors.text.disabled};
-  font-size: 12px;
-  font-weight: 500;
-`;
-
-const StepDivider = styled.div`
-  width: 12px;
-  height: 1px;
-  background: ${theme.colors.text.disabled};
-  margin: 0 2px;
-`;
-
 export const ConversationalRegistration = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -511,8 +453,7 @@ export const ConversationalRegistration = () => {
     handleAnswer,
     goBack,
     isComplete,
-    resetForm
-  } = useRegistrationFlow(isEmergency);
+  } = useRegistrationFlow();
 
   const handleInputChange = (field: keyof RegistrationData, value: string) => {
     setCurrentInputs(prev => ({
@@ -641,9 +582,7 @@ export const ConversationalRegistration = () => {
     return null;
   }
 
-  const currentQuestion = typeof currentStep.question === 'function' 
-    ? currentStep.question(formData) 
-    : currentStep.question;
+  
 
   const currentHelpText = typeof currentStep.helpText === 'function'
     ? currentStep.helpText(formData)

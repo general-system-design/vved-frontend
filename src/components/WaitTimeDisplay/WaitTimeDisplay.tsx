@@ -48,31 +48,8 @@ const Disclaimer = styled.div`
   margin-top: ${theme.spacing.small};
 `;
 
-const WaitTimeMarker = styled.div`
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-`;
 
-const MarkerValue = styled.div`
-  color: ${theme.colors.text.primary};
-  font-size: 15px;
-  font-weight: 500;
-  background: white;
-  padding: 2px 8px;
-  border-radius: ${theme.borderRadius.small};
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-`;
 
-const CustomLabel = ({ x = 0, y = 0, value }: { x?: number; y?: number; value: number }) => (
-  <WaitTimeMarker style={{ left: x }}>
-    <MarkerValue>{value} minutes</MarkerValue>
-  </WaitTimeMarker>
-);
 
 interface WaitTimeDisplayProps {
   currentWaitTime: number;
