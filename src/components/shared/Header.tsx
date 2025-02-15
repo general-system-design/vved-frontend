@@ -22,15 +22,10 @@ const HeaderTitle = styled.h1`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.small};
-
-  &::before {
-    content: '⚕️';
-    font-size: 20px;
-  }
 `;
 
 const Logo = styled.img`
-  height: 32px;
+  height: 40px;
   width: auto;
   filter: brightness(0) invert(1);
 `;

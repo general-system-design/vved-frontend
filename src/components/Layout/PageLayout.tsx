@@ -19,10 +19,14 @@ const ProgressBar = styled.div<{ progress: number }>`
 `;
 
 const Content = styled.main`
-  max-width: 640px;
+  width: 100%;
   margin: 0 auto;
   min-height: 100vh;
   position: relative;
+
+  @media (min-width: 640px) {
+    max-width: 640px;
+  }
 `;
 
 const BackButton = styled.button`

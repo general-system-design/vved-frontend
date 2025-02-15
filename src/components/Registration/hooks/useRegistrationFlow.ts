@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { RegistrationData, initialRegistrationData } from '../types';
+import { RegistrationData, initialRegistrationData } from '../types/index';
 import { registrationSteps } from '../steps';
 
 export const useRegistrationFlow = () => {
@@ -54,7 +54,7 @@ export const useRegistrationFlow = () => {
     return step.validation(value);
   }, []);
 
-  const handleAnswer = useCallback((answers: Record<string, string>): { 
+  const validateAnswers = useCallback((answers: Record<string, string>): { 
     success: boolean; 
     error?: string;
   } => {
@@ -73,6 +73,11 @@ export const useRegistrationFlow = () => {
       }
     }
 
+    setError(undefined);
+    return { success: true };
+  }, [getCurrentSteps, validateAnswer, formData]);
+
+  const submitAnswer = useCallback((answers: Record<string, string>) => {
     // Handle address selection
     if (answers.streetAddress && answers.streetAddress.includes(',')) {
       // Parse the selected address
@@ -96,7 +101,7 @@ export const useRegistrationFlow = () => {
     setFormData(newFormData);
 
     // Find next non-skipped step
-    let nextStepIndex = currentStepIndex + steps.length;
+    let nextStepIndex = currentStepIndex + getCurrentSteps().length;
     while (
       nextStepIndex < registrationSteps.length && 
       registrationSteps[nextStepIndex].skipIf?.(newFormData)
@@ -107,10 +112,18 @@ export const useRegistrationFlow = () => {
     if (nextStepIndex < registrationSteps.length) {
       setCurrentStepIndex(nextStepIndex);
     }
+  }, [currentStepIndex, formData, getCurrentSteps]);
 
-    setError(undefined);
-    return { success: true };
-  }, [currentStepIndex, validateAnswer, formData]);
+  const handleAnswer = useCallback((answers: Record<string, string>): { 
+    success: boolean; 
+    error?: string;
+  } => {
+    const validationResult = validateAnswers(answers);
+    if (validationResult.success) {
+      submitAnswer(answers);
+    }
+    return validationResult;
+  }, [validateAnswers, submitAnswer]);
 
   const goBack = useCallback(() => {
     if (currentStepIndex > 0) {
@@ -137,6 +150,8 @@ export const useRegistrationFlow = () => {
     error,
     progress,
     handleAnswer,
+    validateAnswers,
+    submitAnswer,
     goBack,
     isComplete: currentStepIndex === registrationSteps.length - 1,
     resetForm

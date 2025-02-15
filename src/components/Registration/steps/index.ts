@@ -1,6 +1,7 @@
-import { RegistrationStep } from '../types';
+import { RegistrationStep } from '../types/index';
 import { registrantSteps } from './registrantSteps';
 import { personalInfoSteps } from './personalInfoSteps';
+import { symptomSteps } from './symptomSteps';
 import { medicareSteps } from './medicareSteps';
 import { contactSteps } from './contactSteps';
 import { culturalSteps } from './culturalSteps';
@@ -15,7 +16,7 @@ const initialStep: RegistrationStep = {
   field: 'isThirdParty',
   type: 'select',
   options: ['For myself', 'For someone else'],
-  validation: (value) => {
+  validation: (value: string) => {
     if (!value) return 'Please select who you are registering';
     return undefined;
   },
@@ -27,9 +28,10 @@ export const registrationSteps: RegistrationStep[] = [
   initialStep,
   ...registrantSteps,
   ...personalInfoSteps,
+  ...symptomSteps,
+  ...culturalSteps,
   ...medicareSteps,
   ...contactSteps,
-  ...culturalSteps,
   ...addressSteps,
   ...gpSteps,
   ...emergencyContactSteps

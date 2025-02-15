@@ -38,13 +38,6 @@ export const triageQuestions: Record<string, TriageQuestion> = {
     severity: 'high',
     isEmergencySymptom: true,
   },
-  'pain-level': {
-    id: 'pain-level',
-    question: 'On a scale of 0-10, how severe is your pain?',
-    description: '0 being no pain, 10 being the worst pain imaginable',
-    severity: 'medium',
-    isEmergencySymptom: false,
-  },
   'fever': {
     id: 'fever',
     question: 'Do you have a fever?',

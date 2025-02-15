@@ -143,7 +143,7 @@ export const RegistrationChoiceScreen = () => {
       onBack={() => navigate('/')}
     >
       <div>
-        <Header title={isEmergency ? 'Virtual ED Registration' : 'Registration'} />
+        <Header showLogo title="Virtual Emergency Department" />
 
         <Container>
           <div>

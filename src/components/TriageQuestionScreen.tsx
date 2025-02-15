@@ -136,89 +136,6 @@ const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
   }
 `;
 
-const PainScaleContainer = styled.div`
-  margin-top: ${theme.spacing.large};
-  width: 100%;
-  max-width: 370px;
-`;
-
-const PainScale = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.medium};
-`;
-
-const SliderContainer = styled.div`
-  position: relative;
-  padding: ${theme.spacing.medium} ${theme.spacing.small};
-`;
-
-const SliderLabels = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: ${theme.spacing.small};
-  color: ${theme.colors.text.secondary};
-  font-size: ${theme.typography.fontSize.small};
-`;
-
-const SliderInput = styled.input`
-  width: 100%;
-  -webkit-appearance: none;
-  height: 6px;
-  border-radius: 3px;
-  background: linear-gradient(to right, #22C55E, #84CC16, #F59E0B, #EF4444, #DC2626);
-  outline: none;
-  margin: ${theme.spacing.medium} 0;
-
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: white;
-    border: 2px solid ${theme.colors.primary};
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-  }
-
-  &::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  &::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: white;
-    border: 2px solid ${theme.colors.primary};
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-  }
-
-  &::-moz-range-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-`;
-
-const SelectedPain = styled.div`
-  text-align: center;
-  margin-top: ${theme.spacing.medium};
-  font-size: ${theme.typography.fontSize.h3};
-  font-weight: 600;
-  color: ${theme.colors.text.primary};
-`;
-
-const PainDescription = styled.div`
-  text-align: center;
-  color: ${theme.colors.text.secondary};
-  font-size: ${theme.typography.fontSize.small};
-`;
-
 const ProgressSteps = styled.div`
   display: flex;
   gap: ${theme.spacing.small};
@@ -242,25 +159,21 @@ interface TriageAnswers {
   [questionId: string]: boolean | number;
 }
 
-
-
 export const TriageQuestionScreen = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [currentQuestionId, setCurrentQuestionId] = useState('chest-pain');
   const [answers, setAnswers] = useState<TriageAnswers>({});
   const [isExiting, setIsExiting] = useState(false);
-  const [selectedPainLevel, setSelectedPainLevel] = useState<number | null>(null);
   
   const isNewUser = searchParams.get('isNew') === 'true';
   const currentQuestion = triageQuestions[currentQuestionId];
   
-  
-  const baseQuestions = ['chest-pain', 'breathing', 'consciousness', 'bleeding', 'pain-level'];
+  const baseQuestions = ['chest-pain', 'breathing', 'consciousness', 'bleeding'];
   const currentQuestionIndex = baseQuestions.indexOf(currentQuestionId);
   const totalQuestions = baseQuestions.length;
 
-  const handleAnswer = async (answer: boolean | number) => {
+  const handleAnswer = async (answer: boolean) => {
     setIsExiting(true);
     const newAnswers = { ...answers, [currentQuestionId]: answer };
     setAnswers(newAnswers);
@@ -293,16 +206,11 @@ export const TriageQuestionScreen = () => {
       setIsExiting(false);
     }, 50);
   };
-
-  const handlePainSelection = (level: number) => {
-    setSelectedPainLevel(level);
-    setTimeout(() => handleAnswer(level), 500);
-  };
   
   return (
     <PageLayout>
       <div>
-        <Header title="Medical Assessment" />
+        <Header showLogo title="Virtual Emergency Department" />
         
         <Container>
           <ProgressSteps>
@@ -326,49 +234,15 @@ export const TriageQuestionScreen = () => {
               <Description>{currentQuestion.description}</Description>
             )}
             
-            {currentQuestionId === 'pain-level' ? (
-              <PainScaleContainer>
-                <PainScale>
-                  <SliderContainer>
-                    <SliderLabels>
-                      <span>No Pain</span>
-                      <span>Worst Pain</span>
-                    </SliderLabels>
-                    <SliderInput
-                      type="range"
-                      min="0"
-                      max="10"
-                      value={selectedPainLevel || 0}
-                      onChange={(e) => setSelectedPainLevel(Number(e.target.value))}
-                      onMouseUp={() => selectedPainLevel !== null && handlePainSelection(selectedPainLevel)}
-                      onTouchEnd={() => selectedPainLevel !== null && handlePainSelection(selectedPainLevel)}
-                    />
-                    {selectedPainLevel !== null && (
-                      <>
-                        <SelectedPain>{selectedPainLevel}</SelectedPain>
-                        <PainDescription>
-                          {selectedPainLevel === 0 && 'No Pain'}
-                          {selectedPainLevel >= 1 && selectedPainLevel <= 3 && 'Mild Pain'}
-                          {selectedPainLevel >= 4 && selectedPainLevel <= 6 && 'Moderate Pain'}
-                          {selectedPainLevel >= 7 && selectedPainLevel <= 9 && 'Severe Pain'}
-                          {selectedPainLevel === 10 && 'Extreme Pain'}
-                        </PainDescription>
-                      </>
-                    )}
-                  </SliderContainer>
-                </PainScale>
-              </PainScaleContainer>
-            ) : (
-              <ButtonGroup>
-                <Button onClick={() => handleAnswer(true)}>Yes</Button>
-                <Button 
-                  variant="secondary" 
-                  onClick={() => handleAnswer(false)}
-                >
-                  No
-                </Button>
-              </ButtonGroup>
-            )}
+            <ButtonGroup>
+              <Button onClick={() => handleAnswer(true)}>Yes</Button>
+              <Button 
+                variant="secondary" 
+                onClick={() => handleAnswer(false)}
+              >
+                No
+              </Button>
+            </ButtonGroup>
           </QuestionCard>
         </Container>
 

@@ -23,11 +23,27 @@ export interface RegistrationData {
   otherLanguages: string[];
   needsInterpreter: boolean;
   religion?: string;
+  indigenousStatus: string;
+
+  // Symptoms
+  symptoms: string;
+  symptomDuration: string;
+  painLevel: string;
+
+  // Residential Address
   streetAddress: string;
   suburb: string;
   state: string;
   postcode: string;
-  useCurrentLocation: boolean;
+
+  // Current Location (if different from residential)
+  isCurrentLocationDifferent: boolean | null;
+  currentStreetAddress?: string;
+  currentSuburb?: string;
+  currentState?: string;
+  currentPostcode?: string;
+
+  // Other details
   gpName?: string;
   gpClinic?: string;
   gpAddress?: string;
@@ -40,15 +56,16 @@ export interface RegistrationStep {
   id: string;
   question: string | ((formData: RegistrationData) => string);
   field: keyof RegistrationData;
-  type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'boolean';
+  type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'boolean' | 'radio' | 'textarea';
   validation?: (value: string) => string | undefined;
   options?: string[];
-  placeholder?: string;
   pattern?: string;
   helpText?: string | ((formData: RegistrationData) => string);
   followUpQuestion?: (value: string) => string | undefined;
   skipIf?: (formData: RegistrationData) => boolean;
   skipQuestion?: boolean;
+  placeholder?: string;
+  shouldShowContinue?: boolean;
 }
 
 export const initialRegistrationData: RegistrationData = {
@@ -69,11 +86,15 @@ export const initialRegistrationData: RegistrationData = {
   otherLanguages: [],
   needsInterpreter: false,
   religion: '',
+  indigenousStatus: '',
+  symptoms: '',
+  symptomDuration: '',
+  painLevel: '',
   streetAddress: '',
   suburb: '',
   state: '',
   postcode: '',
-  useCurrentLocation: false,
+  isCurrentLocationDifferent: null,
   gpName: '',
   gpClinic: '',
   gpAddress: '',

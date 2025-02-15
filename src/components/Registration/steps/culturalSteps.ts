@@ -1,15 +1,62 @@
-import { RegistrationStep } from '../types';
+import { RegistrationStep } from '../types/index';
 
 export const culturalSteps: RegistrationStep[] = [
   {
-    id: 'preferredLanguage',
+    id: 'countryOfBirth',
+    question: (formData) => formData.isThirdParty === 'For someone else' ?
+      `Which country was ${formData.firstName || 'the patient'} born in?` :
+      "Which country were you born in?",
+    field: 'countryOfBirth',
+    type: 'select',
+    options: [
+      'Australia',
+      'New Zealand',
+      'United Kingdom',
+      'China',
+      'India',
+      'Philippines',
+      'Vietnam',
+      'Malaysia',
+      'Indonesia',
+      'South Africa',
+      'Other'
+    ],
+    validation: (value) => value ? undefined : 'Please select country of birth',
+    helpText: (formData) => formData.isThirdParty === 'For someone else' ?
+      "This helps us understand the patient's cultural and healthcare background" :
+      "This helps us understand your cultural and healthcare background"
+  },
+  {
+    id: 'indigenousStatus',
     question: (formData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `What is ${formData.firstName}'s preferred language?` :
-          "What is the patient's preferred language?";
+          `Does ${formData.firstName} identify as Aboriginal and/or Torres Strait Islander?` :
+          "Does the patient identify as Aboriginal and/or Torres Strait Islander?";
       }
-      return "What is your preferred language?";
+      return "Do you identify as Aboriginal and/or Torres Strait Islander?";
+    },
+    field: 'indigenousStatus',
+    type: 'select',
+    options: [
+      'No',
+      'Yes, Aboriginal',
+      'Yes, Torres Strait Islander',
+      'Yes, both Aboriginal and Torres Strait Islander',
+      'Prefer not to say'
+    ],
+    validation: (value) => value ? undefined : 'Please select an option',
+    helpText: "This information helps us provide culturally appropriate care and access to specific health services"
+  },
+  {
+    id: 'culturalInfo',
+    question: (formData) => {
+      if (formData.isThirdParty === 'For someone else') {
+        return formData.firstName ?
+          `What is ${formData.firstName}'s preferred language and interpreter needs?` :
+          "What is the patient's preferred language and interpreter needs?";
+      }
+      return "What is your preferred language and interpreter needs?";
     },
     field: 'preferredLanguage',
     type: 'select',
@@ -37,19 +84,14 @@ export const culturalSteps: RegistrationStep[] = [
   },
   {
     id: 'needsInterpreter',
-    question: (formData) => {
-      if (formData.isThirdParty === 'For someone else') {
-        return formData.firstName ?
-          `Would you like us to arrange an interpreter for ${formData.firstName}?` :
-          "Would you like us to arrange an interpreter for the patient?";
-      }
-      return "Would you like us to arrange an interpreter?";
-    },
+    question: "",
     field: 'needsInterpreter',
     type: 'select',
     options: ['Yes', 'No'],
     skipIf: (formData) => formData.preferredLanguage === 'English',
     validation: (value) => value ? undefined : 'Please indicate if an interpreter is needed',
+    skipQuestion: true,
+    placeholder: 'Do you need an interpreter?',
     helpText: "We can arrange a professional interpreter at no cost"
   },
   {
