@@ -1,9 +1,9 @@
-import { RegistrationStep } from '../types';
+import { RegistrationStep, RegistrationData } from '../types/index';
 
 export const gpSteps: RegistrationStep[] = [
   {
-    id: 'gpDetails',
-    question: (formData) => {
+    id: 'gpName',
+    question: (formData: RegistrationData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
           `Who is ${formData.firstName}'s regular GP?` :
@@ -13,47 +13,40 @@ export const gpSteps: RegistrationStep[] = [
     },
     field: 'gpName',
     type: 'text',
-    validation: (value) => {
-      if (!value?.trim()) return 'Please enter GP name';
+    validation: (value: string) => {
+      if (!value?.trim()) return 'Please enter your GP name';
       return undefined;
     },
-    placeholder: "GP's full name",
-    helpText: (formData) => {
+    helpText: (formData: RegistrationData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `This helps us coordinate ${formData.firstName}'s care with their regular doctor` :
-          "This helps us coordinate the patient's care with their regular doctor";
+          `Enter ${formData.firstName}'s regular doctor's name` :
+          "Enter the patient's regular doctor's name";
       }
-      return "This helps us coordinate your care with your regular doctor";
-    }
+      return "Enter your regular doctor's name";
+    },
+    placeholder: "GP's full name"
   },
   {
     id: 'gpClinic',
-    question: "",
+    question: "What's the name of their medical clinic?",
     field: 'gpClinic',
     type: 'text',
-    validation: (value) => {
-      if (!value?.trim()) return 'Please enter clinic name';
+    validation: (value: string) => {
+      if (!value?.trim()) return 'Please enter the clinic name';
       return undefined;
     },
-    placeholder: "Medical clinic name",
-    skipQuestion: true
+    placeholder: 'Medical clinic name'
   },
   {
     id: 'gpAddress',
-    question: "",
+    question: "What's the clinic's address?",
     field: 'gpAddress',
-    type: 'select',
-    options: [
-      '123 Medical Centre, Sydney NSW 2000',
-      '456 Family Practice, Melbourne VIC 3000',
-      '789 Health Hub, Brisbane QLD 4000'
-    ],
-    validation: (value) => {
-      if (!value) return 'Please select or enter clinic address';
+    type: 'text',
+    validation: (value: string) => {
+      if (!value?.trim()) return 'Please enter the clinic address';
       return undefined;
     },
-    placeholder: "Search for clinic address",
-    skipQuestion: true
+    placeholder: 'Clinic address'
   }
 ]; 

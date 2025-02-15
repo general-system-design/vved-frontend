@@ -1,49 +1,46 @@
-import { RegistrationStep } from '../types';
+import { RegistrationStep, RegistrationData } from '../types/index';
 
 export const medicareSteps: RegistrationStep[] = [
   {
     id: 'hasMedicareCard',
-    question: (formData) => {
+    question: (formData: RegistrationData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `Do you have access to ${formData.firstName}'s Medicare card?` :
-          "Do you have access to the patient's Medicare card?";
+          `Does ${formData.firstName} have a Medicare card?` :
+          "Does the patient have a Medicare card?";
       }
-      return "Do you have your Medicare card with you?";
+      return "Do you have a Medicare card?";
     },
     field: 'hasMedicareCard',
-    type: 'select',
-    options: ['Yes', 'No'],
-    helpText: (formData) => {
+    type: 'radio',
+    helpText: (formData: RegistrationData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `We'll need ${formData.firstName}'s Medicare number from their green Medicare card` :
-          "We'll need the patient's Medicare number from their green Medicare card";
+          `We'll need ${formData.firstName}'s Medicare details for billing` :
+          "We'll need the patient's Medicare details for billing";
       }
-      return "We'll need your Medicare number from your green Medicare card";
+      return "We'll need your Medicare details for billing";
     }
   },
   {
     id: 'medicareNumber',
-    question: (formData) => {
+    question: (formData: RegistrationData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `Please enter ${formData.firstName}'s Medicare number` :
-          "Please enter the patient's Medicare number";
+          `What is ${formData.firstName}'s Medicare number?` :
+          "What is the patient's Medicare number?";
       }
-      return "Please enter your Medicare number";
+      return "What is your Medicare number?";
     },
     field: 'medicareNumber',
-    type: 'tel',
-    validation: (value) => {
-      if (!/^\d{10}$/.test(value)) {
-        return 'Please enter a valid 10-digit Medicare number';
-      }
+    type: 'text',
+    validation: (value: string) => {
+      if (!value) return 'Please enter your Medicare number';
+      if (!/^\d{10}$/.test(value)) return 'Medicare number must be 10 digits';
       return undefined;
     },
     pattern: '\\d{10}',
-    placeholder: 'Medicare number',
-    skipIf: (formData) => formData.hasMedicareCard === 'No' || formData.hasMedicareCard === '',
-    helpText: "The Medicare number is a 10-digit number found on the green Medicare card"
+    placeholder: 'XXXXXXXXXX',
+    skipIf: (formData: RegistrationData) => formData.hasMedicareCard === 'No' || formData.hasMedicareCard === ''
   }
 ]; 
