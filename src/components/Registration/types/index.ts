@@ -1,34 +1,39 @@
 export interface RegistrationData {
   // Registration context
-  isThirdParty: 'For myself' | 'For someone else' | '';
+  isThirdParty?: string;
   registrantRelationship?: string;
   registrantName?: string;
   registrantContact?: string;
-  hasAuthority: boolean;
+  hasAuthority?: boolean;
   useRegistrantAsEmergencyContact?: 'Yes' | 'No';
 
   // Patient details
   title: string;
-  firstName: string;
+  firstName?: string;
   lastName: string;
-  medicareNumber: string;
+  medicareChoice?: 'with-medicare' | 'without-medicare' | 'not-eligible';
   hasMedicareCard: 'Yes' | 'No' | '';
-  dateOfBirth: string;
+  medicareNumber: string;
+  medicareIRN: string;
+  medicareExpiry: string;
+  medicareEligibility: 'yes' | 'no' | 'unsure' | '';
+  birthDay: string;
+  birthMonth: string;
+  birthYear: string;
   countryOfBirth: string;
   phone: string;
   phoneVerificationCode: string;
   email: string;
   preferredContactMethod: string;
   preferredLanguage: string;
-  otherLanguages: string[];
-  needsInterpreter: boolean;
+  otherLanguages?: string[];
+  needsInterpreter?: boolean;
   religion?: string;
   indigenousStatus: string;
 
   // Symptoms
-  symptoms: string;
-  symptomDuration: string;
-  painLevel: string;
+  mainConcern: string;
+  additionalDetails: string;
 
   // Residential Address
   streetAddress: string;
@@ -37,7 +42,7 @@ export interface RegistrationData {
   postcode: string;
 
   // Current Location (if different from residential)
-  isCurrentLocationDifferent: boolean | null;
+  isCurrentLocationDifferent?: boolean | null;
   currentStreetAddress?: string;
   currentSuburb?: string;
   currentState?: string;
@@ -50,22 +55,48 @@ export interface RegistrationData {
   nokName: string;
   nokRelationship: string;
   nokContact: string;
+
+  [key: string]: string | string[] | boolean | null | undefined;
+}
+
+export interface SearchResult {
+  label: string;
+  value: string;
+  details: any;
+}
+
+interface FieldConfig {
+  type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'boolean' | 'radio' | 'textarea';
+  field: keyof RegistrationData;
+  label: string;
+  placeholder?: string;
+  helpText?: string;
+  required?: boolean;
+  options?: string[] | Array<{ value: string; label: string }>;
 }
 
 export interface RegistrationStep {
   id: string;
   question: string | ((formData: RegistrationData) => string);
-  field: keyof RegistrationData;
-  type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'boolean' | 'radio' | 'textarea';
-  validation?: (value: string) => string | undefined;
-  options?: string[];
+  field: string;
+  type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'boolean' | 'radio' | 'textarea' | 'custom' | 'multifield';
+  validation: (value: string | RegistrationData, formData?: RegistrationData) => string | undefined;
+  options?: string[] | Array<{ value: string; label: string }>;
   pattern?: string;
+  maxLength?: number;
+  layout?: 'inline-3' | 'inline-2' | 'stacked';
+  label?: string;
+  isDateField?: boolean;
   helpText?: string | ((formData: RegistrationData) => string);
   followUpQuestion?: (value: string) => string | undefined;
   skipIf?: (formData: RegistrationData) => boolean;
   skipQuestion?: boolean;
   placeholder?: string;
   shouldShowContinue?: boolean;
+  component?: React.ComponentType<any>;
+  fields?: FieldConfig[];
+  onSearch?: (query: string) => Promise<any[]>;
+  formatSearchResult?: (result: any) => SearchResult;
 }
 
 export const initialRegistrationData: RegistrationData = {
@@ -74,9 +105,15 @@ export const initialRegistrationData: RegistrationData = {
   title: '',
   firstName: '',
   lastName: '',
-  medicareNumber: '',
+  medicareChoice: undefined,
   hasMedicareCard: '',
-  dateOfBirth: '',
+  medicareNumber: '',
+  medicareIRN: '',
+  medicareExpiry: '',
+  medicareEligibility: '',
+  birthDay: '',
+  birthMonth: '',
+  birthYear: '',
   countryOfBirth: '',
   phone: '',
   phoneVerificationCode: '',
@@ -87,9 +124,8 @@ export const initialRegistrationData: RegistrationData = {
   needsInterpreter: false,
   religion: '',
   indigenousStatus: '',
-  symptoms: '',
-  symptomDuration: '',
-  painLevel: '',
+  mainConcern: '',
+  additionalDetails: '',
   streetAddress: '',
   suburb: '',
   state: '',

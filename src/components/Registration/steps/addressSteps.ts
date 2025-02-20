@@ -6,17 +6,18 @@ export const addressSteps: RegistrationStep[] = [
     question: (formData: RegistrationData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `Is ${formData.firstName} currently at their residential address?` :
-          "Is the patient currently at their residential address?";
+          `Is ${formData.firstName} currently at home?` :
+          "Is the patient currently at home";
       }
-      return "Are you currently at your residential address?";
+      return "Are you currently at home?";
     },
     field: 'isCurrentLocationDifferent',
     type: 'radio',
-    validation: (value: string) => {
-      if (value === undefined || value === '') return 'Please answer this question';
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string' || value === undefined || value === '') return 'Please answer this question';
       return undefined;
-    }
+    },
+    helpText: "This helps us know where to send emergency services if needed"
   },
   {
     id: 'currentStreetAddress',
@@ -26,12 +27,12 @@ export const addressSteps: RegistrationStep[] = [
           `What is ${formData.firstName}'s current location?` :
           "What is the patient's current location?";
       }
-      return "What's your current location?";
+      return "Where are you right now?";
     },
     field: 'currentStreetAddress',
     type: 'text',
-    validation: (value: string) => {
-      if (!value?.trim()) return 'Please enter the street address';
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string' || !value?.trim()) return 'Please enter the street address';
       return undefined;
     },
     placeholder: 'Street address (e.g., 1 Smith Street)',
@@ -43,8 +44,8 @@ export const addressSteps: RegistrationStep[] = [
     question: "",
     field: 'currentSuburb',
     type: 'text',
-    validation: (value: string) => {
-      if (!value?.trim()) return 'Please enter the suburb';
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string' || !value?.trim()) return 'Please enter the suburb';
       return undefined;
     },
     placeholder: 'Suburb',
@@ -56,7 +57,8 @@ export const addressSteps: RegistrationStep[] = [
     question: "",
     field: 'currentState',
     type: 'text',
-    validation: (value: string) => {
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string') return 'Please select the state';
       const validStates = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'];
       if (!value) return 'Please select the state';
       if (!validStates.includes(value)) return 'Please enter a valid state abbreviation';
@@ -71,8 +73,8 @@ export const addressSteps: RegistrationStep[] = [
     question: "",
     field: 'currentPostcode',
     type: 'text',
-    validation: (value: string) => {
-      if (!value?.trim()) return 'Please enter the postcode';
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string' || !value?.trim()) return 'Please enter the postcode';
       if (!/^\d{4}$/.test(value)) return 'Please enter a valid 4-digit postcode';
       return undefined;
     },
@@ -94,8 +96,8 @@ export const addressSteps: RegistrationStep[] = [
     },
     field: 'streetAddress',
     type: 'text',
-    validation: (value: string) => {
-      if (!value?.trim()) return 'Please enter the street address';
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string' || !value?.trim()) return 'Please enter the street address';
       return undefined;
     },
     placeholder: 'Street address (e.g., 1 Smith Street)',
@@ -113,8 +115,8 @@ export const addressSteps: RegistrationStep[] = [
     question: "",
     field: 'suburb',
     type: 'text',
-    validation: (value: string) => {
-      if (!value?.trim()) return 'Please enter the suburb';
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string' || !value?.trim()) return 'Please enter the suburb';
       return undefined;
     },
     placeholder: 'Suburb',
@@ -125,7 +127,8 @@ export const addressSteps: RegistrationStep[] = [
     question: "",
     field: 'state',
     type: 'text',
-    validation: (value: string) => {
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string') return 'Please select the state';
       const validStates = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'];
       if (!value) return 'Please select the state';
       if (!validStates.includes(value)) return 'Please enter a valid state abbreviation';
@@ -139,8 +142,8 @@ export const addressSteps: RegistrationStep[] = [
     question: "",
     field: 'postcode',
     type: 'text',
-    validation: (value: string) => {
-      if (!value?.trim()) return 'Please enter the postcode';
+    validation: (value: string | RegistrationData) => {
+      if (typeof value !== 'string' || !value?.trim()) return 'Please enter the postcode';
       if (!/^\d{4}$/.test(value)) return 'Please enter a valid 4-digit postcode';
       return undefined;
     },

@@ -6,6 +6,7 @@ export const useRegistrationFlow = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [formData, setFormData] = useState<RegistrationData>(initialRegistrationData);
   const [error, setError] = useState<string | undefined>();
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const currentStep = registrationSteps[currentStepIndex];
   
@@ -49,24 +50,38 @@ export const useRegistrationFlow = () => {
 
   const progress = getProgress();
 
-  const validateAnswer = useCallback((value: string, step: typeof currentStep) => {
+  const validateAnswer = useCallback((value: string, step: typeof currentStep, formData: RegistrationData) => {
     if (!step.validation) return undefined;
-    return step.validation(value);
+    return step.validation(value, formData);
   }, []);
 
   const validateAnswers = useCallback((answers: Record<string, string>): { 
     success: boolean; 
     error?: string;
   } => {
+    // Skip validation during transitions
+    if (isTransitioning) {
+      return { success: true };
+    }
+
     const steps = getCurrentSteps();
+    
+    // Create temporary form data that includes the new answers
+    const tempFormData = {
+      ...formData,
+      ...answers
+    };
     
     // Validate all answers
     for (const step of steps) {
-      const answer = answers[step.field];
-      // Skip validation if the step should be skipped
-      if (step.skipIf?.(formData)) continue;
+      // Skip validation for fields not in the current answer set
+      if (!(step.field in answers)) continue;
       
-      const error = validateAnswer(answer ?? '', step);
+      const answer = answers[step.field];
+      // Skip validation if the step should be skipped, using the temporary form data
+      if (step.skipIf?.(tempFormData)) continue;
+      
+      const error = validateAnswer(answer ?? '', step, tempFormData);
       if (error) {
         setError(error);
         return { success: false, error };
@@ -75,9 +90,12 @@ export const useRegistrationFlow = () => {
 
     setError(undefined);
     return { success: true };
-  }, [getCurrentSteps, validateAnswer, formData]);
+  }, [getCurrentSteps, validateAnswer, formData, isTransitioning]);
 
-  const submitAnswer = useCallback((answers: Record<string, string>) => {
+  const submitAnswer = useCallback(async (answers: Record<string, string>) => {
+    setIsTransitioning(true);
+    setError(undefined);
+
     // Handle address selection
     if (answers.streetAddress && answers.streetAddress.includes(',')) {
       // Parse the selected address
@@ -112,6 +130,10 @@ export const useRegistrationFlow = () => {
     if (nextStepIndex < registrationSteps.length) {
       setCurrentStepIndex(nextStepIndex);
     }
+
+    // Small delay to ensure transition state is maintained through the re-render
+    await new Promise(resolve => setTimeout(resolve, 50));
+    setIsTransitioning(false);
   }, [currentStepIndex, formData, getCurrentSteps]);
 
   const handleAnswer = useCallback((answers: Record<string, string>): { 
@@ -127,6 +149,7 @@ export const useRegistrationFlow = () => {
 
   const goBack = useCallback(() => {
     if (currentStepIndex > 0) {
+      setIsTransitioning(true);
       // Find previous non-skipped step
       let prevStepIndex = currentStepIndex - 1;
       while (prevStepIndex > 0 && registrationSteps[prevStepIndex].skipQuestion) {
@@ -134,13 +157,17 @@ export const useRegistrationFlow = () => {
       }
       setCurrentStepIndex(prevStepIndex);
       setError(undefined);
+      // Reset transition state after a small delay
+      setTimeout(() => setIsTransitioning(false), 50);
     }
   }, [currentStepIndex]);
 
   const resetForm = useCallback(() => {
+    setIsTransitioning(true);
     setCurrentStepIndex(0);
     setFormData(initialRegistrationData);
     setError(undefined);
+    setTimeout(() => setIsTransitioning(false), 50);
   }, []);
 
   return {
@@ -154,6 +181,8 @@ export const useRegistrationFlow = () => {
     submitAnswer,
     goBack,
     isComplete: currentStepIndex === registrationSteps.length - 1,
-    resetForm
+    resetForm,
+    isTransitioning,
+    setFormData
   };
 }; 

@@ -49,19 +49,34 @@ export const culturalSteps: RegistrationStep[] = [
     helpText: "This information helps us provide culturally appropriate care and access to specific health services"
   },
   {
+    id: 'needsInterpreter',
+    question: (formData) => {
+      if (formData.isThirdParty === 'For someone else') {
+        return formData.firstName ?
+          `Does ${formData.firstName} need an interpreter?` :
+          "Does the patient need an interpreter?";
+      }
+      return "Do you need an interpreter?";
+    },
+    field: 'needsInterpreter',
+    type: 'select',
+    options: ['Yes', 'No'],
+    validation: (value) => value ? undefined : 'Please indicate if an interpreter is needed',
+    helpText: "We can arrange a professional interpreter at no cost"
+  },
+  {
     id: 'culturalInfo',
     question: (formData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `What is ${formData.firstName}'s preferred language and interpreter needs?` :
-          "What is the patient's preferred language and interpreter needs?";
+          `What is ${formData.firstName}'s preferred language?` :
+          "What is the patient's preferred language?";
       }
-      return "What is your preferred language and interpreter needs?";
+      return "What is your preferred language?";
     },
     field: 'preferredLanguage',
     type: 'select',
     options: [
-      'English',
       'Mandarin',
       'Arabic',
       'Vietnamese',
@@ -72,6 +87,12 @@ export const culturalSteps: RegistrationStep[] = [
       'Spanish',
       'Other'
     ],
+    skipIf: (formData) => {
+      if (typeof formData.needsInterpreter === 'string') {
+        return formData.needsInterpreter === 'No' || formData.needsInterpreter === 'false';
+      }
+      return false;
+    },
     validation: (value) => value ? undefined : 'Please select a preferred language',
     helpText: (formData) => {
       if (formData.isThirdParty === 'For someone else') {
@@ -81,18 +102,6 @@ export const culturalSteps: RegistrationStep[] = [
       }
       return "This helps us ensure effective communication during your visit";
     }
-  },
-  {
-    id: 'needsInterpreter',
-    question: "",
-    field: 'needsInterpreter',
-    type: 'select',
-    options: ['Yes', 'No'],
-    skipIf: (formData) => formData.preferredLanguage === 'English',
-    validation: (value) => value ? undefined : 'Please indicate if an interpreter is needed',
-    skipQuestion: true,
-    placeholder: 'Do you need an interpreter?',
-    helpText: "We can arrange a professional interpreter at no cost"
   },
   {
     id: 'religion',

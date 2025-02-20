@@ -133,7 +133,7 @@ export const RegistrationChoiceScreen = () => {
   };
   
   const handleNewUser = () => {
-    navigate(`/triage?type=${searchParams.get('type')}&isNew=true`);
+    navigate(`/register?type=${searchParams.get('type')}&isNew=true`);
   };
   
   return (

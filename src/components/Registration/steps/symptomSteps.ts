@@ -1,4 +1,5 @@
 import { RegistrationStep, RegistrationData } from '../types/index';
+import React from 'react';
 
 export const symptomSteps: RegistrationStep[] = [
   {
@@ -6,58 +7,42 @@ export const symptomSteps: RegistrationStep[] = [
     question: (formData: RegistrationData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?
-          `Please describe ${formData.firstName}'s current symptoms or reason for visit` :
-          "Please describe the patient's current symptoms or reason for visit";
+          `Tell us about ${formData.firstName}'s symptoms` :
+          "Tell us about the patient's symptoms";
       }
-      return "Please describe your current symptoms or reason for visit";
+      return "Tell us about your symptoms";
     },
-    field: 'symptoms',
-    type: 'textarea',
-    validation: (value: string) => {
-      if (!value?.trim()) return 'Please provide a description of the symptoms';
-      if (value.trim().length < 10) return 'Please provide more detail about the symptoms';
+    field: 'mainConcern',
+    type: 'multifield',
+    validation: (value: string | RegistrationData, formData?: RegistrationData) => {
+      if (typeof value === 'string') {
+        if (!value?.trim()) return 'Please enter your main concern or symptom';
+        return undefined;
+      }
+      // When validating the entire form data
+      if (!value.mainConcern?.trim()) {
+        return 'Please enter your main concern or symptom';
+      }
       return undefined;
     },
-    placeholder: 'Describe your symptoms and when they started',
-    helpText: "This helps us understand your needs and prioritize care appropriately"
-  },
-  {
-    id: 'symptomDuration',
-    question: "When did these symptoms start?",
-    field: 'symptomDuration',
-    type: 'select',
-    options: [
-      'Today',
-      'Yesterday',
-      'In the last week',
-      'In the last month',
-      'More than a month ago'
-    ],
-    validation: (value: string) => value ? undefined : 'Please select when the symptoms started',
-    helpText: "This information helps us assess the urgency of your condition"
-  },
-  {
-    id: 'painLevel',
-    question: (formData: RegistrationData) => {
-      if (formData.isThirdParty === 'For someone else') {
-        return formData.firstName ?
-          `On a scale of 0-10, how would you rate ${formData.firstName}'s current pain level?` :
-          "On a scale of 0-10, how would you rate the patient's current pain level?";
+    shouldShowContinue: true,
+    fields: [
+      {
+        type: 'text',
+        field: 'mainConcern',
+        label: 'Main concern or symptom *',
+        placeholder: 'e.g. Chest pain, difficulty breathing, severe headache',
+        helpText: "Please be specific about your main symptom or concern",
+        required: true
+      },
+      {
+        type: 'textarea',
+        field: 'additionalDetails',
+        label: 'Additional details',
+        placeholder: 'e.g. When it started, what makes it better/worse, related symptoms',
+        helpText: "This information helps us better understand your condition (optional)",
+        required: false
       }
-      return "On a scale of 0-10, how would you rate your current pain level?";
-    },
-    field: 'painLevel',
-    type: 'select',
-    options: [
-      '0 - No pain',
-      '1-2 - Mild pain',
-      '3-4 - Moderate pain',
-      '5-6 - Strong pain',
-      '7-8 - Very strong pain',
-      '9-10 - Worst possible pain',
-      'Not applicable'
-    ],
-    validation: (value: string) => value ? undefined : 'Please select a pain level',
-    helpText: "0 means no pain, 10 means the worst pain imaginable"
+    ]
   }
 ]; 
