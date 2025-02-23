@@ -3,7 +3,6 @@ export interface MedicareData {
   medicareNumber: string;
   medicareIRN: string;
   medicareExpiry: string;
-  medicareCardImage?: string;
 }
 
 export interface MedicareFormProps {
@@ -27,32 +26,4 @@ export interface MedicareInputProps {
 export interface MedicareValidation {
   isValid: boolean;
   error?: string;
-}
-
-export interface CameraCaptureProps {
-  onCapture: (imageData: string) => void;
-  onClose: () => void;
-  isOpen: boolean;
-}
-
-export interface OcrResult {
-  medicareNumber?: string;
-  medicareIRN?: string;
-  medicareExpiry?: string;
-  confidence: number;
-  rawText: string;
-}
-
-export interface CapturePreviewProps {
-  imageData: string;
-  ocrResult?: OcrResult;
-  onConfirm: () => void;
-  onRetry: () => void;
-  isProcessing: boolean;
-}
-
-export interface OcrFeedbackProps {
-  status: string;
-  confidence?: number;
-  isProcessing: boolean;
 } 

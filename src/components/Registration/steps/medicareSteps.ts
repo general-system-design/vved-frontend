@@ -1,9 +1,6 @@
 import { RegistrationStep, RegistrationData } from '../types/index';
 import { MedicareForm } from '../components/Medicare/MedicareForm';
 
-// TODO: Remove this flag when OCR testing is complete
-const TESTING_MODE = true;
-
 export const medicareSteps: RegistrationStep[] = [
   {
     id: 'medicareDetails',
@@ -18,34 +15,56 @@ export const medicareSteps: RegistrationStep[] = [
     field: 'medicareNumber',
     type: 'custom',
     component: MedicareForm,
-    validation: (value: string | RegistrationData, formData?: RegistrationData) => {
-      // Skip validation in testing mode
-      if (TESTING_MODE) {
-        console.debug('Medicare validation skipped - Testing Mode');
-        return undefined;
-      }
+    validation: (value: string | RegistrationData, formData?: RegistrationData, currentInputs?: Partial<RegistrationData>) => {
+      // Only validate on form submission
+      if (!formData) return undefined;
+      
+      // Combine currentInputs with formData, preferring currentInputs
+      const data = {
+        ...formData,
+        ...(currentInputs || {}),
+        // If value is a string, it's the Medicare number being validated
+        ...(typeof value === 'string' ? { medicareNumber: value } : value)
+      } as RegistrationData;
 
-      const data = (typeof value === 'string' ? formData : value) as RegistrationData;
+      console.log('Medicare validation:', {
+        value,
+        formData,
+        currentInputs,
+        data,
+        medicareNumber: data?.medicareNumber,
+        medicareIRN: data?.medicareIRN,
+        medicareExpiry: data?.medicareExpiry
+      });
+
+      // Check Medicare number
       if (!data?.medicareNumber) {
         return 'Please enter the Medicare number';
       }
       if (!/^\d{10}$/.test(data.medicareNumber)) {
         return 'Medicare number must be 10 digits';
       }
-      if (!data.medicareIRN) {
+
+      // Check IRN - use currentInputs.medicareIRN if available
+      const irn = currentInputs?.medicareIRN || data.medicareIRN;
+      if (!irn) {
+        console.log('IRN validation failed:', { irn, currentInputs });
         return 'Please enter the IRN';
       }
-      if (!/^[1-9]$/.test(data.medicareIRN)) {
+      if (!/^[1-9]$/.test(irn)) {
         return 'IRN must be a single digit between 1-9';
       }
-      if (!data.medicareExpiry) {
+
+      // Check expiry date
+      const expiry = currentInputs?.medicareExpiry || data.medicareExpiry;
+      if (!expiry) {
         return 'Please enter the expiry date';
       }
-      if (!/^\d{2}\/\d{2}$/.test(data.medicareExpiry)) {
+      if (!/^\d{2}\/\d{2}$/.test(expiry)) {
         return 'Expiry date must be in MM/YY format';
       }
       
-      const [month, year] = data.medicareExpiry.split('/');
+      const [month, year] = expiry.split('/');
       const monthNum = parseInt(month);
       if (monthNum < 1 || monthNum > 12) {
         return 'Invalid month in expiry date';
@@ -74,6 +93,7 @@ export const medicareSteps: RegistrationStep[] = [
       { value: 'no', label: 'No' },
       { value: 'unsure', label: "I'm not sure" }
     ],
+    validation: (value) => value ? undefined : 'Please select your Medicare eligibility status',
     helpText: "This helps us understand your healthcare coverage options",
     // Only show this question if they selected 'Continue without Medicare'
     skipIf: (formData: RegistrationData) => 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { LocationMap } from '../LocationMap';
 import { LocationIcon, LoadingIcon } from './Icons';
+import { ProgressIndicator } from './ProgressIndicator';
+import { useRegistrationProgress } from '../hooks/useRegistrationProgress';
 import type { RegistrationStep, RegistrationData } from '../types/index';
 import {
   QuestionWrapper,
@@ -44,7 +46,7 @@ interface QuestionFormProps {
     state: string;
     postcode: string;
   }>;
-  onInputChange: (field: keyof RegistrationData, value: string) => Promise<void>;
+  onInputChange: (field: keyof RegistrationData & string, value: string) => Promise<void>;
   onLocationConfirmed: (address: {
     streetAddress: string;
     suburb: string;
@@ -87,8 +89,9 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 }) => {
   const monthInputRef = React.useRef<HTMLInputElement>(null);
   const yearInputRef = React.useRef<HTMLInputElement>(null);
+  const progressInfo = useRegistrationProgress(currentStep);
 
-  const handleSelectChange = async (field: keyof RegistrationData, value: string) => {
+  const handleSelectChange = async (field: string, value: string) => {
     // Always prevent changes during transitions
     if (isTransitioning) return;
     
@@ -96,7 +99,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
     if (!value && !isTransitioning) return;
     
     // Set the input value
-    await onInputChange(field, value);
+    await onInputChange(field as keyof RegistrationData & string, value);
     
     // Special handling for isCurrentLocationDifferent
     if (field === 'isCurrentLocationDifferent') {
@@ -114,10 +117,10 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
     }
   };
 
-  const handleDateFieldChange = async (field: keyof RegistrationData, value: string, step: RegistrationStep) => {
+  const handleDateFieldChange = async (field: string, value: string, step: RegistrationStep) => {
     if (isTransitioning) return;
     
-    await onInputChange(field, value);
+    await onInputChange(field as keyof RegistrationData & string, value);
 
     // If we have a valid 2-digit value, move to next field or validate
     if (value.length === step.maxLength) {
@@ -135,12 +138,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
   };
 
   const renderInput = (step: RegistrationStep) => {
-    const field = step.field as keyof RegistrationData;
+    const field = step.field as string;
     const value = (currentInputs[field]?.toString() || formData[field]?.toString() || '') as string;
     const hasError = !!error && !isTransitioning && step.validation && step.validation(value, formData) === error;
 
     // Special handling for current location map
-    if (step.field === 'currentStreetAddress' && formData.isCurrentLocationDifferent) {
+    if (field === 'currentStreetAddress' && formData.isCurrentLocationDifferent) {
       return (
         <>
           <LocationMap onLocationConfirmed={onLocationConfirmed} />
@@ -152,7 +155,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
                   type={step.type}
                   value={value}
                   onChange={(e) => {
-                    onInputChange(step.field, e.target.value);
+                    onInputChange(field as keyof RegistrationData & string, e.target.value);
                     onAddressSearch(e.target.value);
                   }}
                   onKeyPress={(e) => e.key === 'Enter' && !isTransitioning && onContinue()}
@@ -200,7 +203,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
           <Input
             type={step.type}
             value={value}
-            onChange={(e) => handleDateFieldChange(step.field, e.target.value, step)}
+            onChange={(e) => handleDateFieldChange(field, e.target.value, step)}
             onKeyPress={(e) => e.key === 'Enter' && !isTransitioning && onContinue()}
             placeholder={step.placeholder}
             pattern={step.pattern}
@@ -218,55 +221,63 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
       case 'multifield':
         return (
           <>
-            {step.fields?.map((field) => (
-              <InputWrapper key={field.field}>
-                <InputLabel>{field.label}</InputLabel>
-                {field.type === 'textarea' ? (
-                  <Input
-                    as="textarea"
-                    value={currentInputs[field.field]?.toString() || formData[field.field]?.toString() || ''}
-                    onChange={(e) => {
-                      // Auto-resize the textarea
-                      e.target.style.height = 'auto';
-                      e.target.style.height = `${e.target.scrollHeight}px`;
-                      onInputChange(field.field, e.target.value);
-                    }}
-                    placeholder={field.placeholder}
-                    hasError={field.required && hasError}
-                    disabled={isTransitioning}
-                    $isTextarea
-                  />
-                ) : field.type === 'select' ? (
-                  <Select
-                    value={currentInputs[field.field]?.toString() || formData[field.field]?.toString() || ''}
-                    onChange={(e) => onInputChange(field.field, e.target.value)}
-                    hasError={field.required && hasError}
-                    disabled={isTransitioning}
-                  >
-                    <option value="">{field.placeholder || 'Select an option'}</option>
-                    {field.options?.map((option) => (
-                      <option 
-                        key={typeof option === 'string' ? option : option.value} 
-                        value={typeof option === 'string' ? option : option.value}
-                      >
-                        {typeof option === 'string' ? option : option.label}
-                      </option>
-                    ))}
-                  </Select>
-                ) : (
-                  <Input
-                    type={field.type}
-                    value={currentInputs[field.field]?.toString() || formData[field.field]?.toString() || ''}
-                    onChange={(e) => onInputChange(field.field, e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && !isTransitioning && onContinue()}
-                    placeholder={field.placeholder}
-                    hasError={field.required && hasError}
-                    disabled={isTransitioning}
-                  />
-                )}
-                {field.helpText && <HelpText>{field.helpText}</HelpText>}
-              </InputWrapper>
-            ))}
+            {step.fields?.map((field) => {
+              const fieldValue = currentInputs[field.field]?.toString() || formData[field.field]?.toString() || '';
+              const hasFieldError = !!error && !isTransitioning && step.validation && 
+                step.validation({ ...formData, [field.field]: fieldValue }, formData) === error;
+
+              return (
+                <InputWrapper key={field.field}>
+                  <InputLabel>{field.label}</InputLabel>
+                  {field.type === 'textarea' ? (
+                    <Input
+                      as="textarea"
+                      value={fieldValue}
+                      onChange={(e) => {
+                        // Auto-resize the textarea
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                        onInputChange(field.field as keyof RegistrationData & string, e.target.value);
+                      }}
+                      placeholder={field.placeholder}
+                      hasError={field.required && hasFieldError}
+                      disabled={isTransitioning}
+                      $isTextarea
+                    />
+                  ) : field.type === 'select' ? (
+                    <Select
+                      value={fieldValue}
+                      onChange={(e) => onInputChange(field.field as keyof RegistrationData & string, e.target.value)}
+                      hasError={field.required && hasFieldError}
+                      disabled={isTransitioning}
+                    >
+                      <option value="">{field.placeholder || 'Select an option'}</option>
+                      {field.options?.map((option) => (
+                        <option 
+                          key={typeof option === 'string' ? option : option.value} 
+                          value={typeof option === 'string' ? option : option.value}
+                        >
+                          {typeof option === 'string' ? option : option.label}
+                        </option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Input
+                      type={field.type}
+                      value={fieldValue}
+                      onChange={(e) => onInputChange(field.field as keyof RegistrationData & string, e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && !isTransitioning && onContinue()}
+                      placeholder={field.placeholder}
+                      pattern={field.pattern}
+                      maxLength={field.maxLength}
+                      hasError={field.required && hasFieldError}
+                      disabled={isTransitioning}
+                    />
+                  )}
+                  {field.helpText && <HelpText>{field.helpText}</HelpText>}
+                </InputWrapper>
+              );
+            })}
           </>
         );
       case 'custom':
@@ -278,9 +289,11 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         return (
           <CustomComponent
             formData={formData}
+            currentInputs={currentInputs}
             onInputChange={onInputChange}
             error={hasError ? error : undefined}
             isTransitioning={isTransitioning}
+            step={step}
           />
         );
       case 'select':
@@ -289,7 +302,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             <InputLabel>{step.placeholder || 'Select an option'}</InputLabel>
             <Select
               value={value}
-              onChange={(e) => handleSelectChange(step.field, e.target.value)}
+              onChange={(e) => handleSelectChange(field, e.target.value)}
               hasError={hasError}
               disabled={isTransitioning}
             >
@@ -312,12 +325,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             <RadioLabel>
               <RadioInput
                 type="radio"
-                name={step.field}
+                name={field}
                 value="true"
                 checked={value === 'true'}
                 onChange={() => {
                   if (isTransitioning) return;
-                  onInputChange(step.field, 'true');
+                  onInputChange(field as keyof RegistrationData & string, 'true');
                   if (step.type === 'boolean') onContinue();
                 }}
                 disabled={isTransitioning}
@@ -327,12 +340,12 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             <RadioLabel>
               <RadioInput
                 type="radio"
-                name={step.field}
+                name={field}
                 value="false"
                 checked={value === 'false'}
                 onChange={() => {
                   if (isTransitioning) return;
-                  onInputChange(step.field, 'false');
+                  onInputChange(field as keyof RegistrationData & string, 'false');
                   if (step.type === 'boolean') onContinue();
                 }}
                 disabled={isTransitioning}
@@ -343,7 +356,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         );
       default:
         // Special handling for street address to add location button
-        if (step.field === 'streetAddress') {
+        if (field === 'streetAddress') {
           return (
             <InputWrapper>
               <InputLabel>{step.placeholder}</InputLabel>
@@ -353,7 +366,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
                     type={step.type}
                     value={value}
                     onChange={(e) => {
-                      onInputChange(step.field, e.target.value);
+                      onInputChange(field as keyof RegistrationData & string, e.target.value);
                       onAddressSearch(e.target.value);
                     }}
                     onKeyPress={(e) => e.key === 'Enter' && !isTransitioning && onContinue()}
@@ -398,7 +411,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
             <Input
               type={step.type}
               value={value}
-              onChange={(e) => onInputChange(step.field, e.target.value)}
+              onChange={(e) => onInputChange(field as keyof RegistrationData & string, e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && !isTransitioning && onContinue()}
               placeholder={step.placeholder}
               pattern={step.pattern}
@@ -431,6 +444,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
   return (
     <QuestionWrapper>
+      <ProgressIndicator {...progressInfo} />
       <QuestionContainer isExiting={isExiting}>
         {!nextStepQueued && currentSteps.map((step, index) => (
           <React.Fragment key={step.id}>

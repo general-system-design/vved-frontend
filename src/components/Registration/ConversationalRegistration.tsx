@@ -10,6 +10,7 @@ import { Container, FormContainer } from './ConversationalRegistration.styles';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { QuestionForm } from './components/QuestionForm';
 import { Navigation } from './components/Navigation';
+import { MedicareForm } from './components/Medicare/MedicareForm';
 
 export const ConversationalRegistration = () => {
   const navigate = useNavigate();
@@ -47,11 +48,20 @@ export const ConversationalRegistration = () => {
   const { getAddressFromCoordinates, searchAddress, isLoading: isMapboxLoading } = useMapbox();
 
   const handleInputChange = async (field: keyof RegistrationData, value: string) => {
-    console.log('handleInputChange called:', { field, value });
-    setCurrentInputs(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    console.group('handleInputChange');
+    console.log('Field:', field);
+    console.log('Value:', value);
+    console.log('Current form data:', formData);
+    console.log('Current inputs:', currentInputs);
+    
+    setCurrentInputs(prev => {
+      const newInputs = {
+        ...prev,
+        [field]: value
+      };
+      console.log('New inputs:', newInputs);
+      return newInputs;
+    });
 
     // For select fields that are part of a multi-field step, don't auto-progress
     const isMultiFieldStep = currentSteps.length > 1;
@@ -65,10 +75,14 @@ export const ConversationalRegistration = () => {
         await handleTransition(answer);
       }
     }
+    console.groupEnd();
   };
 
   const handleTransition = async (answer: Record<string, string>) => {
+    console.group('handleTransition');
     console.log('Starting transition with answer:', answer);
+    console.log('Current form data:', formData);
+    console.log('Current inputs:', currentInputs);
     
     setIsTransitioning(true);
     setIsExiting(true);
@@ -89,6 +103,9 @@ export const ConversationalRegistration = () => {
       setIsTransitioning(false);
       setNextStepQueued(false);
     });
+    
+    console.log('After transition - form data:', formData);
+    console.groupEnd();
   };
 
   const handleContinue = async () => {
@@ -96,10 +113,39 @@ export const ConversationalRegistration = () => {
 
     setHasInteracted(true);
 
-    const answer = currentSteps.reduce((acc, step) => ({
-      ...acc,
-      [step.field]: currentInputs[step.field]?.toString() || formData[step.field]?.toString() || ''
-    }), {} as Record<string, string>);
+    // Enhanced logging for debugging
+    console.group('Form Submission');
+    console.log('Current step:', currentStep);
+    console.log('Current inputs:', currentInputs);
+    console.log('Form data:', formData);
+
+    let answer: Record<string, string> = {};
+
+    if (currentStep.type === 'custom' && currentStep.component === MedicareForm) {
+      // Handle Medicare form fields
+      answer = {
+        medicareNumber: currentInputs.medicareNumber?.toString() || formData.medicareNumber?.toString() || '',
+        medicareIRN: currentInputs.medicareIRN?.toString() || formData.medicareIRN?.toString() || '',
+        medicareExpiry: currentInputs.medicareExpiry?.toString() || formData.medicareExpiry?.toString() || ''
+      };
+    } else {
+      // Handle all other steps, including multifield steps
+      currentSteps.forEach(step => {
+        if (step.type === 'multifield' && step.fields) {
+          // For multifield steps, include all fields from the fields array
+          step.fields.forEach(field => {
+            const fieldValue = currentInputs[field.field]?.toString() || formData[field.field]?.toString() || '';
+            answer[field.field] = fieldValue;
+          });
+        } else {
+          // For regular steps, just include the main field
+          answer[step.field] = currentInputs[step.field]?.toString() || formData[step.field]?.toString() || '';
+        }
+      });
+    }
+
+    console.log('Submitting answers:', answer);
+    console.groupEnd();
 
     const result = validateAnswers(answer);
     if (result.success) {
@@ -298,6 +344,22 @@ export const ConversationalRegistration = () => {
     console.log('State changed - error:', error, 'hasInteracted:', hasInteracted, 'currentStep:', currentStep);
   }, [error, hasInteracted, currentStep]);
 
+  // Handle navigation to confirmation screen
+  React.useEffect(() => {
+    if (isComplete) {
+      const timer = setTimeout(() => {
+        navigate('/confirmation', {
+          state: {
+            registrationData: formData,
+            type: searchParams.get('type')
+          }
+        });
+      }, 0);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isComplete, formData, navigate, searchParams]);
+
   if (showWelcome) {
     return (
       <PageLayout progress={0}>
@@ -310,12 +372,6 @@ export const ConversationalRegistration = () => {
   }
 
   if (isComplete) {
-    navigate('/confirmation', {
-      state: {
-        registrationData: formData,
-        type: searchParams.get('type')
-      }
-    });
     return null;
   }
 

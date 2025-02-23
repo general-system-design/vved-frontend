@@ -7,6 +7,7 @@ import { RegistrationChoiceScreen } from './components/RegistrationChoiceScreen'
 import { TriageQuestionScreen } from './components/TriageQuestionScreen';
 import { EmergencyInstructionsScreen } from './components/EmergencyInstructionsScreen';
 import { ConversationalRegistration } from './components/Registration/ConversationalRegistration';
+import { ConfirmationScreen } from './components/Registration/ConfirmationScreen';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -57,6 +58,7 @@ function App() {
         <Route path="/triage" element={<TriageQuestionScreen />} />
         <Route path="/emergency-instructions" element={<EmergencyInstructionsScreen />} />
         <Route path="/register" element={<ConversationalRegistration />} />
+        <Route path="/confirmation" element={<ConfirmationScreen />} />
       </Routes>
     </BrowserRouter>
   );

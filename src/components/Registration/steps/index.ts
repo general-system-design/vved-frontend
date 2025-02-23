@@ -20,19 +20,28 @@ const initialStep: RegistrationStep = {
     if (!value) return 'Please select who you are registering';
     return undefined;
   },
-  helpText: "This helps us tailor the registration process appropriately"
+  helpText: "This helps us tailor the registration process appropriately",
+  section: "Registration Type"
 };
 
-// Combine all steps in the correct order
+// Add section information to each step group
+const addSectionToSteps = (steps: RegistrationStep[], sectionName: string): RegistrationStep[] => {
+  return steps.map(step => ({
+    ...step,
+    section: sectionName
+  }));
+};
+
+// Combine all steps in the correct order with section information
 export const registrationSteps: RegistrationStep[] = [
   initialStep,
-  ...registrantSteps,      // Registration context (if registering for someone else)
-  ...medicareSteps,        // Medicare details (following welcome screen)
-  ...personalInfoSteps,    // Basic personal information
-  ...symptomSteps,         // Medical need
-  ...contactSteps,         // Contact details
-  ...addressSteps,         // Address information
-  ...emergencyContactSteps, // Support network
-  ...gpSteps,              // GP information
-  ...culturalSteps         // Healthcare context
+  ...addSectionToSteps(registrantSteps, "Registrant Details"),
+  ...addSectionToSteps(medicareSteps, "Medicare Information"),
+  ...addSectionToSteps(personalInfoSteps, "Personal Information"),
+  ...addSectionToSteps(symptomSteps, "Medical Need"),
+  ...addSectionToSteps(contactSteps, "Contact Details"),
+  ...addSectionToSteps(addressSteps, "Address Information"),
+  ...addSectionToSteps(emergencyContactSteps, "Emergency Contact"),
+  ...addSectionToSteps(gpSteps, "GP Information"),
+  ...addSectionToSteps(culturalSteps, "Healthcare Context")
 ]; 

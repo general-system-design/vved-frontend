@@ -126,6 +126,7 @@ export const culturalSteps: RegistrationStep[] = [
       'Other',
       'Prefer not to say'
     ],
+    validation: () => undefined,
     helpText: (formData) => {
       if (formData.isThirdParty === 'For someone else') {
         return formData.firstName ?

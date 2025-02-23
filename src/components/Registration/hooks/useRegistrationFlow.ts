@@ -50,9 +50,9 @@ export const useRegistrationFlow = () => {
 
   const progress = getProgress();
 
-  const validateAnswer = useCallback((value: string, step: typeof currentStep, formData: RegistrationData) => {
+  const validateAnswer = useCallback((value: string, step: typeof currentStep, formData: RegistrationData, currentInputs?: Partial<RegistrationData>) => {
     if (!step.validation) return undefined;
-    return step.validation(value, formData);
+    return step.validation(value, formData, currentInputs);
   }, []);
 
   const validateAnswers = useCallback((answers: Record<string, string>): { 
@@ -81,7 +81,8 @@ export const useRegistrationFlow = () => {
       // Skip validation if the step should be skipped, using the temporary form data
       if (step.skipIf?.(tempFormData)) continue;
       
-      const error = validateAnswer(answer ?? '', step, tempFormData);
+      // Pass both the answer and the full answers object to validation
+      const error = step.validation?.(answer ?? '', tempFormData, answers);
       if (error) {
         setError(error);
         return { success: false, error };
@@ -90,9 +91,23 @@ export const useRegistrationFlow = () => {
 
     setError(undefined);
     return { success: true };
-  }, [getCurrentSteps, validateAnswer, formData, isTransitioning]);
+  }, [getCurrentSteps, formData, isTransitioning]);
 
   const submitAnswer = useCallback(async (answers: Record<string, string>) => {
+    console.group('submitAnswer');
+    console.log('Current answer:', answers);
+    console.log('Current form data:', formData);
+
+    // Check if this is a GP-related answer
+    if (answers.gpName || answers.gpClinic || answers.gpAddress || answers.gpDetails) {
+      console.log('Processing GP data:', {
+        gpName: answers.gpName,
+        gpClinic: answers.gpClinic,
+        gpAddress: answers.gpAddress,
+        gpDetails: answers.gpDetails
+      });
+    }
+
     setIsTransitioning(true);
     setError(undefined);
 
@@ -134,6 +149,8 @@ export const useRegistrationFlow = () => {
     // Small delay to ensure transition state is maintained through the re-render
     await new Promise(resolve => setTimeout(resolve, 50));
     setIsTransitioning(false);
+
+    console.groupEnd();
   }, [currentStepIndex, formData, getCurrentSteps]);
 
   const handleAnswer = useCallback((answers: Record<string, string>): { 

@@ -1,3 +1,14 @@
+export interface GPDetails {
+  HealthOrg_Description?: string;
+  Postal_Address?: string;
+  Postal_Suburb?: string;
+  Postal_State?: string;
+  Postal_Postcode?: string;
+  Phone?: string;
+  Work_Phone?: string;
+  HEORG_REFNO: string;
+}
+
 export interface RegistrationData {
   // Registration context
   isThirdParty?: string;
@@ -13,33 +24,33 @@ export interface RegistrationData {
   lastName: string;
   medicareChoice?: 'with-medicare' | 'without-medicare' | 'not-eligible';
   hasMedicareCard: 'Yes' | 'No' | '';
-  medicareNumber: string;
-  medicareIRN: string;
-  medicareExpiry: string;
-  medicareEligibility: 'yes' | 'no' | 'unsure' | '';
-  birthDay: string;
-  birthMonth: string;
-  birthYear: string;
-  countryOfBirth: string;
-  phone: string;
-  phoneVerificationCode: string;
-  email: string;
-  preferredContactMethod: string;
-  preferredLanguage: string;
+  medicareNumber?: string;
+  medicareIRN?: string;
+  medicareExpiry?: string;
+  medicareEligibility?: 'yes' | 'no' | 'unsure' | '';
+  birthDay?: string;
+  birthMonth?: string;
+  birthYear?: string;
+  countryOfBirth?: string;
+  phone?: string;
+  phoneVerificationCode?: string;
+  email?: string;
+  preferredContactMethod?: string;
+  preferredLanguage?: string;
   otherLanguages?: string[];
   needsInterpreter?: boolean;
   religion?: string;
-  indigenousStatus: string;
+  indigenousStatus?: string;
 
   // Symptoms
-  mainConcern: string;
-  additionalDetails: string;
+  mainConcern?: string;
+  additionalDetails?: string;
 
   // Residential Address
-  streetAddress: string;
-  suburb: string;
-  state: string;
-  postcode: string;
+  streetAddress?: string;
+  suburb?: string;
+  state?: string;
+  postcode?: string;
 
   // Current Location (if different from residential)
   isCurrentLocationDifferent?: boolean | null;
@@ -48,15 +59,18 @@ export interface RegistrationData {
   currentState?: string;
   currentPostcode?: string;
 
-  // Other details
+  // GP Information
   gpName?: string;
   gpClinic?: string;
   gpAddress?: string;
-  nokName: string;
-  nokRelationship: string;
-  nokContact: string;
+  gpDetails?: string | GPDetails;
 
-  [key: string]: string | string[] | boolean | null | undefined;
+  // Emergency Contact
+  nokName?: string;
+  nokRelationship?: string;
+  nokContact?: string;
+
+  [key: string]: string | string[] | boolean | null | undefined | GPDetails;
 }
 
 export interface SearchResult {
@@ -65,22 +79,28 @@ export interface SearchResult {
   details: any;
 }
 
-interface FieldConfig {
-  type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'boolean' | 'radio' | 'textarea';
-  field: keyof RegistrationData;
+export interface FieldConfig {
+  type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'textarea';
+  field: string;
   label: string;
   placeholder?: string;
   helpText?: string;
   required?: boolean;
   options?: string[] | Array<{ value: string; label: string }>;
+  pattern?: string;
+  maxLength?: number;
 }
 
 export interface RegistrationStep {
   id: string;
   question: string | ((formData: RegistrationData) => string);
-  field: string;
+  field: keyof RegistrationData & string;
   type: 'text' | 'tel' | 'date' | 'email' | 'select' | 'boolean' | 'radio' | 'textarea' | 'custom' | 'multifield';
-  validation: (value: string | RegistrationData, formData?: RegistrationData) => string | undefined;
+  validation: (
+    value: string | RegistrationData, 
+    formData?: RegistrationData,
+    currentInputs?: Partial<RegistrationData>
+  ) => string | undefined;
   options?: string[] | Array<{ value: string; label: string }>;
   pattern?: string;
   maxLength?: number;
@@ -97,6 +117,7 @@ export interface RegistrationStep {
   fields?: FieldConfig[];
   onSearch?: (query: string) => Promise<any[]>;
   formatSearchResult?: (result: any) => SearchResult;
+  section?: string;
 }
 
 export const initialRegistrationData: RegistrationData = {
