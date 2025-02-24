@@ -19,11 +19,11 @@ export interface RegistrationData {
   useRegistrantAsEmergencyContact?: 'Yes' | 'No';
 
   // Patient details
-  title: string;
+  title?: string;
   firstName?: string;
-  lastName: string;
+  lastName?: string;
   medicareChoice?: 'with-medicare' | 'without-medicare' | 'not-eligible';
-  hasMedicareCard: 'Yes' | 'No' | '';
+  hasMedicareCard?: 'Yes' | 'No' | '';
   medicareNumber?: string;
   medicareIRN?: string;
   medicareExpiry?: string;
@@ -69,8 +69,6 @@ export interface RegistrationData {
   nokName?: string;
   nokRelationship?: string;
   nokContact?: string;
-
-  [key: string]: string | string[] | boolean | null | undefined | GPDetails;
 }
 
 export interface SearchResult {

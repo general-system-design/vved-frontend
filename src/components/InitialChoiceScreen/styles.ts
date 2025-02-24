@@ -1,10 +1,7 @@
 import styled, { keyframes, css } from 'styled-components';
-import { theme } from '../styles/theme';
-import { WaitTimeDisplay } from './WaitTimeDisplay/WaitTimeDisplay';
-import { EmergencyBanner } from './shared/EmergencyBanner';
-import { Header } from './shared/Header';
+import { theme } from '../../styles/theme';
 
-const fadeIn = keyframes`
+export const fadeIn = keyframes`
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -15,7 +12,7 @@ const fadeIn = keyframes`
   }
 `;
 
-const pulseAnimation = keyframes`
+export const pulseAnimation = keyframes`
   0% {
     transform: scale(1);
     box-shadow: 0 4px 20px rgba(0, 102, 204, 0.15);
@@ -30,9 +27,7 @@ const pulseAnimation = keyframes`
   }
 `;
 
-
-
-const ScreenContainer = styled.div`
+export const ScreenContainer = styled.div`
   min-height: 100vh;
   background: white;
   display: flex;
@@ -40,7 +35,7 @@ const ScreenContainer = styled.div`
   animation: ${fadeIn} 0.6s ease-out;
 `;
 
-const MainContent = styled.div`
+export const MainContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -53,36 +48,7 @@ const MainContent = styled.div`
   padding-bottom: calc(${theme.spacing.xlarge} * 3);
 `;
 
-const Logo = styled.div`
-  font-family: ${theme.typography.fontFamily.header};
-  font-size: 36px;
-  color: ${theme.colors.text.primary};
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.5px;
-  text-align: center;
-  margin-bottom: ${theme.spacing.medium};
-  
-  span {
-    display: block;
-    font-size: 32px;
-    color: ${theme.colors.primary};
-    font-weight: 500;
-    margin-top: ${theme.spacing.small};
-  }
-`;
-
-const Subtitle = styled.p`
-  font-size: ${theme.typography.fontSize.h3};
-  color: ${theme.colors.text.secondary};
-  max-width: 480px;
-  margin: 0 auto ${theme.spacing.xlarge};
-  line-height: 1.5;
-  font-weight: 400;
-  text-align: center;
-`;
-
-const ButtonContainer = styled.div`
+export const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.large};
@@ -91,7 +57,7 @@ const ButtonContainer = styled.div`
   margin-bottom: ${theme.spacing.xlarge};
 `;
 
-const Button = styled.button<{ variant: 'emergency' | 'regular' }>`
+export const Button = styled.button<{ variant: 'emergency' | 'regular' }>`
   width: 100%;
   height: ${props => props.variant === 'emergency' ? '80px' : '56px'};
   border: none;
@@ -144,53 +110,4 @@ const Button = styled.button<{ variant: 'emergency' | 'regular' }>`
   &:active {
     transform: translateY(1px);
   }
-`;
-
-interface InitialChoiceScreenProps {
-  onEmergency: () => void;
-  onPreRegister: () => void;
-}
-
-export const InitialChoiceScreen = ({ 
-  onEmergency, 
-  onPreRegister 
-}: InitialChoiceScreenProps) => {
-  return (
-    <ScreenContainer>
-      <Header showLogo title="Virtual Emergency Department" />
-      
-      <MainContent>
-        <Logo>
-          Virtual Emergency
-          <span>Department</span>
-        </Logo>
-        
-        <Subtitle>
-          Secure, immediate access to emergency medical care from your location
-        </Subtitle>
-        
-        <ButtonContainer>
-          <Button 
-            variant="emergency" 
-            onClick={onEmergency}
-            aria-label="Start virtual emergency assessment"
-          >
-            Start Virtual Emergency Consult
-          </Button>
-          
-          <Button 
-            variant="regular" 
-            onClick={onPreRegister}
-            aria-label="Pre-register for future visits"
-          >
-            Pre-register for Future Visits
-          </Button>
-        </ButtonContainer>
-        
-        <WaitTimeDisplay currentWaitTime={35} />
-      </MainContent>
-
-      <EmergencyBanner />
-    </ScreenContainer>
-  );
-}; 
+`; 

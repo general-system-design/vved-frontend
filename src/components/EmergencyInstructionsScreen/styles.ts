@@ -1,9 +1,7 @@
 import styled from 'styled-components';
-import { theme } from '../styles/theme';
-import { PageLayout } from './Layout/PageLayout';
-import { useNavigate } from 'react-router-dom';
+import { theme } from '../../styles/theme';
 
-const Container = styled.div`
+export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.xlarge};
@@ -14,7 +12,7 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-const EmergencyCard = styled.div`
+export const EmergencyCard = styled.div`
   background: ${theme.colors.surface};
   border-radius: ${theme.borderRadius.large};
   padding: ${theme.spacing.xlarge};
@@ -22,7 +20,7 @@ const EmergencyCard = styled.div`
   border: 2px solid ${theme.colors.emergency};
 `;
 
-const Title = styled.h1`
+export const Title = styled.h1`
   font-family: ${theme.typography.fontFamily.header};
   font-size: ${theme.typography.fontSize.h1};
   color: ${theme.colors.emergency};
@@ -30,14 +28,14 @@ const Title = styled.h1`
   text-align: center;
 `;
 
-const Instruction = styled.p`
+export const Instruction = styled.p`
   font-size: ${theme.typography.fontSize.body};
   color: ${theme.colors.text.primary};
   margin-bottom: ${theme.spacing.medium};
   line-height: 1.5;
 `;
 
-const EmergencyNumber = styled.div`
+export const EmergencyNumber = styled.div`
   background: ${theme.colors.emergency};
   color: ${theme.colors.surface};
   font-size: ${theme.typography.fontSize.h1};
@@ -48,7 +46,7 @@ const EmergencyNumber = styled.div`
   margin: ${theme.spacing.large} 0;
 `;
 
-const Button = styled.button`
+export const Button = styled.button`
   width: 100%;
   height: 56px;
   border: none;
@@ -65,43 +63,4 @@ const Button = styled.button`
   &:hover {
     transform: scale(1.02);
   }
-`;
-
-export const EmergencyInstructionsScreen = () => {
-  const navigate = useNavigate();
-  
-  return (
-    <PageLayout progress={100}>
-      <Container>
-        <EmergencyCard>
-          <Title>Emergency Instructions</Title>
-          
-          <Instruction>
-            Based on your symptoms, you should seek immediate medical attention.
-          </Instruction>
-          
-          <Instruction>
-            Please call emergency services immediately:
-          </Instruction>
-          
-          <EmergencyNumber>000</EmergencyNumber>
-          
-          <Instruction>
-            While waiting for emergency services:
-          </Instruction>
-          
-          <ul>
-            <li>Stay calm and find a safe place to rest</li>
-            <li>Have someone stay with you if possible</li>
-            <li>Keep your phone nearby</li>
-            <li>Unlock your door for emergency services</li>
-          </ul>
-        </EmergencyCard>
-        
-        <Button onClick={() => navigate('/')}>
-          Return to Home
-        </Button>
-      </Container>
-    </PageLayout>
-  );
-}; 
+`; 
