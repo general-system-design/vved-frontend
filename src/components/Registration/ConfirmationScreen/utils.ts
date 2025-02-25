@@ -32,10 +32,7 @@ export const getFieldLabel = (field: string): string => {
 
 export const getSectionConfig = (sectionName: string): { fields: string[], layout: string[][] } => {
   const configs: Record<string, { fields: string[], layout: string[][] }> = {
-    "Registration Type": {
-      fields: ['isThirdParty'],
-      layout: [['isThirdParty']]
-    },
+    
     "Personal Information": {
       fields: ['title', 'firstName', 'lastName', 'birthDay', 'birthMonth', 'birthYear'],
       layout: [
@@ -47,17 +44,9 @@ export const getSectionConfig = (sectionName: string): { fields: string[], layou
       fields: ['medicareNumber', 'medicareIRN', 'medicareExpiry'],
       layout: [['medicareNumber'], ['medicareIRN', 'medicareExpiry']]
     },
-    "Contact Details": {
-      fields: ['phone', 'email', 'preferredLanguage', 'needsInterpreter'],
-      layout: [['phone', 'email'], ['preferredLanguage', 'needsInterpreter']]
-    },
     "Medical Need": {
       fields: ['mainConcern', 'additionalDetails'],
       layout: [['mainConcern'], ['additionalDetails']]
-    },
-    "Address Information": {
-      fields: ['streetAddress', 'suburb', 'state', 'postcode'],
-      layout: [['streetAddress'], ['suburb', 'state'], ['postcode']]
     },
     "Emergency Contact": {
       fields: ['nokName', 'nokRelationship', 'nokContact'],

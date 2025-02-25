@@ -19,7 +19,8 @@ import {
   InfoTitle,
   InfoText,
   SubmitButtonContainer,
-  SubmitButton
+  SubmitButton,
+  MainContent
 } from './styles';
 
 export const ConfirmationScreen = () => {
@@ -82,9 +83,7 @@ export const ConfirmationScreen = () => {
   }, [sectionsReviewed, registrationSteps]);
 
   const handleSubmit = () => {
-    if (hasScrolledToBottom) {
-      setShowAccountModal(true);
-    }
+    setShowAccountModal(true);
   };
 
   const handleCompleteRegistration = (createAccount: boolean, password: string) => {
@@ -118,13 +117,12 @@ export const ConfirmationScreen = () => {
   const totalSteps = 4;
 
   return (
-    <>
-      <PageLayout>
-        <Container>
+    <PageLayout>
+      <Container>
+        <div style={{ position: 'sticky', top: 0, zIndex: 100, background: 'white' }}>
           <Header showLogo title="Virtual Emergency Department" />
-          
-          <Content isEmergency={true}>
-            <ProgressSection>
+          <ProgressSection>
+            <Content>
               <ProgressIndicator
                 currentSection="Review all answers"
                 totalSections={totalSteps}
@@ -134,8 +132,12 @@ export const ConfirmationScreen = () => {
                 nextSection="Connect to Triage team"
                 isLastQuestionInSection={true}
               />
-            </ProgressSection>
+            </Content>
+          </ProgressSection>
+        </div>
 
+        <Content>
+          <MainContent>
             <InfoBox>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
@@ -145,56 +147,54 @@ export const ConfirmationScreen = () => {
               <InfoContent>
                 <InfoTitle>Review Your Information</InfoTitle>
                 <InfoText>
-                  Please check your details are correct before proceeding. You can make changes by scrolling through each section.
+                  Please check your details are correct before proceeding. You can make changes by clicking the edit button on each section.
                 </InfoText>
               </InfoContent>
             </InfoBox>
 
             <ReviewCard>
-              <div ref={reviewContentRef} onScroll={handleScroll} style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                {Object.entries(registrationSteps.reduce((acc, step) => {
-                  if (!step.section) return acc;
-                  if (!acc[step.section]) acc[step.section] = true;
-                  return acc;
-                }, {} as Record<string, boolean>))
-                .filter(([sectionName]) => shouldShowSection(sectionName))
-                .map(([sectionName]) => (
-                  <ReviewSection
-                    key={sectionName}
-                    sectionName={sectionName}
-                    registrationData={registrationData}
-                    gpInfo={{ details: gpDetails, isLoading: isLoadingGP }}
-                  />
-                ))}
-              </div>
+              {Object.entries(registrationSteps.reduce((acc, step) => {
+                if (!step.section) return acc;
+                if (!acc[step.section]) acc[step.section] = true;
+                return acc;
+              }, {} as Record<string, boolean>))
+              .filter(([sectionName]) => shouldShowSection(sectionName))
+              .map(([sectionName]) => (
+                <ReviewSection
+                  key={sectionName}
+                  sectionName={sectionName}
+                  registrationData={registrationData}
+                  gpInfo={{ details: gpDetails, isLoading: isLoadingGP }}
+                />
+              ))}
             </ReviewCard>
+          </MainContent>
 
-            {showAccountModal && (
-              <AccountCreationModal
-                onClose={() => setShowAccountModal(false)}
-                onComplete={handleCompleteRegistration}
-                registrationData={{
-                  email: registrationData.email,
-                  ...Object.fromEntries(
-                    Object.entries(registrationData).filter(([key]) => key !== 'email')
-                  )
-                } as any}
-              />
-            )}
+          {showAccountModal && (
+            <AccountCreationModal
+              onClose={() => setShowAccountModal(false)}
+              onComplete={handleCompleteRegistration}
+              registrationData={{
+                email: registrationData.email,
+                ...Object.fromEntries(
+                  Object.entries(registrationData).filter(([key]) => key !== 'email')
+                )
+              } as any}
+            />
+          )}
+        </Content>
 
-            <SubmitButtonContainer isEmergency={true}>
-              <SubmitButton 
-                onClick={handleSubmit} 
-                isEnabled={hasScrolledToBottom}
-                disabled={!hasScrolledToBottom}
-              >
-                {hasScrolledToBottom ? 'Complete Registration' : 'Please Review Details'}
-              </SubmitButton>
-            </SubmitButtonContainer>
-          </Content>
-        </Container>
-      </PageLayout>
-      <EmergencyBanner />
-    </>
+        <SubmitButtonContainer>
+          <SubmitButton 
+            onClick={handleSubmit}
+            isEnabled={true}
+          >
+            Complete Registration
+          </SubmitButton>
+        </SubmitButtonContainer>
+
+        {isEmergency && <EmergencyBanner />}
+      </Container>
+    </PageLayout>
   );
 }; 

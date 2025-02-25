@@ -352,12 +352,14 @@ interface Props {
   registrationData: {
     email?: string;
   } & Omit<RegistrationData, 'email'>;
+  context?: 'pre-registration' | 'post-visit';
 }
 
 export const AccountCreationModal: React.FC<Props> = ({
   onClose,
   onComplete,
-  registrationData
+  registrationData,
+  context = 'post-visit'
 }) => {
   const [createAccount, setCreateAccount] = useState(true);
   const [password, setPassword] = useState('');
@@ -411,6 +413,70 @@ export const AccountCreationModal: React.FC<Props> = ({
   const passwordError = showErrors && (!password || !allRequirementsMet) ?
     "Please enter a valid password meeting all requirements" : undefined;
 
+  const getContextualContent = () => {
+    if (context === 'pre-registration') {
+      return {
+        title: 'Create Your Account',
+        benefits: [
+          {
+            text: 'Start your registration process now',
+            icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            )
+          },
+          {
+            text: 'Save time during your visit',
+            icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            )
+          },
+          {
+            text: 'Access your registration status anytime',
+            icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            )
+          }
+        ],
+        primaryButton: 'Create Account & Continue',
+        showSecondaryButton: false
+      };
+    }
+
+    return {
+      title: 'Set Up Your Account',
+      benefits: [
+        {
+          text: 'Faster check-ins for future visits',
+          icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          )
+        },
+        {
+          text: 'Secure access to your health information',
+          icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          )
+        }
+      ],
+      primaryButton: 'Complete Registration',
+      secondaryButton: 'Set Up Later',
+      setupLaterText: "We'll email you a setup link to complete later",
+      showSecondaryButton: true
+    };
+  };
+
+  const contextContent = getContextualContent();
+
   return (
     <Modal>
       <ModalContent>
@@ -426,22 +492,16 @@ export const AccountCreationModal: React.FC<Props> = ({
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          Set Up Your Account
+          {contextContent.title}
         </Title>
 
         <BenefitsList>
-          <BenefitItem>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
-            Faster check-ins for future visits
-          </BenefitItem>
-          <BenefitItem>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
-            Secure access to your health information
-          </BenefitItem>
+          {contextContent.benefits.map((benefit, index) => (
+            <BenefitItem key={index}>
+              {benefit.icon}
+              {benefit.text}
+            </BenefitItem>
+          ))}
         </BenefitsList>
 
         <Form>
@@ -514,17 +574,21 @@ export const AccountCreationModal: React.FC<Props> = ({
           <Button
             onClick={handleComplete}
           >
-            Complete Registration
+            {contextContent.primaryButton}
           </Button>
-          <Button
-            variant="secondary"
-            onClick={() => onComplete(false, '')}
-          >
-            Set Up Later
-          </Button>
-          <SetupLaterText>
-            We'll email you a setup link to complete later
-          </SetupLaterText>
+          {contextContent.showSecondaryButton && (
+            <>
+              <Button
+                variant="secondary"
+                onClick={() => onComplete(false, '')}
+              >
+                {contextContent.secondaryButton}
+              </Button>
+              <SetupLaterText>
+                {contextContent.setupLaterText}
+              </SetupLaterText>
+            </>
+          )}
         </Actions>
       </ModalContent>
     </Modal>
