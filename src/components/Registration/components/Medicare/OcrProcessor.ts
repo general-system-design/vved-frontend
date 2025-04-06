@@ -1,4 +1,4 @@
-import { createWorker } from 'tesseract.js';
+import { createWorker, PSM } from 'tesseract.js';
 import { OcrResult } from '../../types/medicare';
 
 let workerInstance: Tesseract.Worker | null = null;
@@ -30,10 +30,7 @@ const initializeWorker = async () => {
       await worker.setParameters({
         tessedit_char_whitelist: '0123456789/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ',
         preserve_interword_spaces: '1',
-        tessedit_pageseg_mode: 6, // Assume uniform text block
-        tessedit_ocr_engine_mode: '3', // Use LSTM neural network only
-        textord_heavy_nr: '1', // Handle noisy images better
-        textord_min_linesize: '2.5' // Better handling of small text
+        tessedit_pageseg_mode: PSM.SINGLE_BLOCK // Assume uniform text block
       });
       
       workerInstance = worker;
@@ -218,9 +215,9 @@ export const processMedicareCard = async (imageData: string): Promise<OcrResult>
     const { data: { text, confidence } } = await worker.recognize(processedImage);
 
     // Extract Medicare details
-    const medicareNumber = extractMedicareNumber(text);
-    const medicareIRN = extractIRN(text);
-    const medicareExpiry = extractExpiryDate(text);
+    const medicareNumber = extractMedicareNumber(text) || '';
+    const medicareIRN = extractIRN(text) || '';
+    const medicareExpiry = extractExpiryDate(text) || '';
 
     return {
       medicareNumber,

@@ -58,6 +58,7 @@ Camera.displayName = 'Camera';
 export const MedicareCapture: React.FC<CameraCaptureProps> = ({
   onCapture,
   onClose,
+  onError,
   isOpen
 }) => {
   const webcamRef = useRef<Webcam | null>(null);
@@ -99,12 +100,14 @@ export const MedicareCapture: React.FC<CameraCaptureProps> = ({
       const result = await processMedicareCard(imageSrc);
       setOcrResult(result);
     } catch (err) {
-      setError('Failed to process Medicare card. Please try again or enter details manually.');
+      const errorMessage = 'Failed to process Medicare card. Please try again or enter details manually.';
+      setError(errorMessage);
+      onError?.(new Error(errorMessage));
       console.error('Medicare capture error:', err);
     } finally {
       setIsProcessing(false);
     }
-  }, []);
+  }, [onError]);
 
   const handleRetry = useCallback(() => {
     if (capturedImage) {
@@ -115,7 +118,7 @@ export const MedicareCapture: React.FC<CameraCaptureProps> = ({
     setError(null);
   }, [capturedImage]);
 
-  const handleConfirm = useCallback((correctedResult: OcrResult) => {
+  const handleConfirm = useCallback(() => {
     if (capturedImage) {
       onCapture(capturedImage);
       onClose();

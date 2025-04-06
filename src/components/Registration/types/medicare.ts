@@ -5,6 +5,21 @@ export interface MedicareData {
   medicareExpiry: string;
 }
 
+export interface CameraCaptureProps {
+  onCapture: (image: string) => void;
+  onError?: (error: Error) => void;
+  onClose: () => void;
+  isOpen: boolean;
+}
+
+export interface OcrResult {
+  medicareNumber: string;
+  medicareIRN: string;
+  medicareExpiry: string;
+  confidence: number;
+  rawText: string;
+}
+
 export interface MedicareFormProps {
   formData: MedicareData;
   onInputChange: (field: keyof MedicareData, value: string) => void;

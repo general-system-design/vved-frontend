@@ -60,10 +60,10 @@ export interface RegistrationData {
   currentPostcode?: string;
 
   // GP Information
-  gpName?: string;
+  gpName: string;
   gpClinic?: string;
   gpAddress?: string;
-  gpDetails?: string | GPDetails;
+  gpDetails: string | GPDetails;
 
   // Emergency Contact
   nokName?: string;
@@ -153,6 +153,7 @@ export const initialRegistrationData: RegistrationData = {
   gpName: '',
   gpClinic: '',
   gpAddress: '',
+  gpDetails: '',
   nokName: '',
   nokRelationship: '',
   nokContact: ''

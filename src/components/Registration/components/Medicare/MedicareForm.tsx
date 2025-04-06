@@ -7,7 +7,6 @@ import {
   Label,
   ErrorText,
   HelpText,
-  InputSection,
   SmallInputsRow,
 } from './MedicareForm.styles';
 
@@ -27,28 +26,15 @@ export const MedicareForm: React.FC<ExtendedMedicareFormProps> = ({
   const irnInputRef = React.useRef<HTMLInputElement>(null);
   const expiryInputRef = React.useRef<HTMLInputElement>(null);
 
-  console.log('MedicareForm render:', {
-    formData,
-    currentInputs,
-    error,
-    isTransitioning,
-    hasIRN: !!formData.medicareIRN,
-    irnValue: formData.medicareIRN,
-    currentIRN: currentInputs?.medicareIRN
-  });
-
   // Helper to get current value, preferring currentInputs over formData
   const getValue = (field: keyof MedicareData): string => {
     const currentValue = currentInputs?.[field]?.toString();
     const formValue = formData[field]?.toString();
-    const result = currentValue || formValue || '';
-    console.log('getValue called:', { field, currentValue, formValue, result });
-    return result;
+    return currentValue || formValue || '';
   };
 
   // Wrap onInputChange to add logging and focus management
   const handleInputChange = (field: keyof MedicareData, value: string) => {
-    console.log('handleInputChange called:', { field, value });
     onInputChange(field, value);
 
     // Auto-focus logic
@@ -95,20 +81,11 @@ export const MedicareForm: React.FC<ExtendedMedicareFormProps> = ({
   const medicareIRN = getValue('medicareIRN');
   const medicareExpiry = getValue('medicareExpiry');
 
-  console.log('Current field values:', {
-    medicareNumber,
-    medicareIRN,
-    medicareExpiry
-  });
-
   return (
     <FormContainer>
       <MedicareInput
         value={medicareNumber}
-        onChange={(value) => {
-          console.log('MedicareInput onChange:', { value });
-          handleInputChange('medicareNumber', value);
-        }}
+        onChange={(value) => handleInputChange('medicareNumber', value)}
         error={validateMedicareNumber(medicareNumber).error}
         isTransitioning={isTransitioning}
         label="Medicare Number"
@@ -127,7 +104,6 @@ export const MedicareForm: React.FC<ExtendedMedicareFormProps> = ({
             value={medicareIRN}
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, '');
-              console.log('IRN onChange:', { rawValue: e.target.value, processedValue: value });
               if (value === '' || /^[1-9]$/.test(value)) {
                 handleInputChange('medicareIRN', value);
               }
@@ -157,17 +133,11 @@ export const MedicareForm: React.FC<ExtendedMedicareFormProps> = ({
             value={medicareExpiry}
             onChange={(e) => {
               const digits = e.target.value.replace(/\D/g, '');
-              console.log('Expiry onChange:', { 
-                rawValue: e.target.value, 
-                digits,
-                currentLength: digits.length 
-              });
               if (digits.length <= 4) {
                 let formattedValue = digits;
                 if (digits.length > 2) {
                   formattedValue = `${digits.slice(0, 2)}/${digits.slice(2)}`;
                 }
-                console.log('Expiry updating to:', formattedValue);
                 handleInputChange('medicareExpiry', formattedValue);
               }
             }}

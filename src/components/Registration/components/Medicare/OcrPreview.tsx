@@ -44,11 +44,6 @@ export const OcrPreview: React.FC<OcrPreviewProps> = ({
     setHasEdits(true);
   };
 
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence > 70) return '#28a745';
-    if (confidence > 40) return '#ffc107';
-    return '#dc3545';
-  };
 
   const validateMedicareNumber = (value?: string) => {
     if (!value) return 'Medicare number is required';
@@ -94,7 +89,7 @@ export const OcrPreview: React.FC<OcrPreviewProps> = ({
         <MedicareInput
           label="Medicare Number"
           value={correctedResult.medicareNumber || ''}
-          onChange={(value) => handleInputChange('medicareNumber', value)}
+          onChange={(value: string) => handleInputChange('medicareNumber', value)}
           error={validateMedicareNumber(correctedResult.medicareNumber)}
           placeholder="XXXX XXXXX X"
           helpText={hasEdits ? 'Manually corrected' : 'Extracted from image'}
@@ -148,9 +143,9 @@ export const OcrPreview: React.FC<OcrPreviewProps> = ({
         <Button onClick={onCancel}>Cancel</Button>
         <Button onClick={onRetry}>Retake Photo</Button>
         <Button
-          variant="primary"
           onClick={() => onConfirm(correctedResult)}
           disabled={!isValid()}
+          type="button"
         >
           {hasEdits ? 'Confirm Changes' : 'Confirm Details'}
         </Button>

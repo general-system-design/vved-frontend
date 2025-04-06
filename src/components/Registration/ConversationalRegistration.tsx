@@ -149,7 +149,8 @@ export const ConversationalRegistration = () => {
         if (step.type === 'multifield' && step.fields) {
           // For multifield steps, include all fields from the fields array
           step.fields.forEach(field => {
-            const fieldValue = currentInputs[field.field]?.toString() || formData[field.field]?.toString() || '';
+            const fieldValue = (currentInputs[field.field as keyof Partial<RegistrationData>]?.toString() || 
+                              formData[field.field as keyof RegistrationData]?.toString() || '');
             answer[field.field] = fieldValue;
           });
         } else {

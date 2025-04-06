@@ -2,11 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../../styles/theme';
 import { useNavigate } from 'react-router-dom';
-import {
-  MedicareText,
-  MedicareActions,
-  MedicareButton
-} from '../../ConversationalRegistration.styles';
+
 
 const Modal = styled.div`
   position: fixed;
@@ -154,18 +150,20 @@ const FreeServiceText = styled.p`
 
 interface MedicareOptionsModalProps {
   onClose: () => void;
-  onSelect: (medicareOption: 'with-medicare' | 'without-medicare' | 'not-eligible') => void;
+  onSelect: (medicareOption: "with-medicare" | "without-medicare" | "not-eligible") => void;
 }
 
 export const MedicareOptionsModal: React.FC<MedicareOptionsModalProps> = ({ onClose, onSelect }) => {
   const navigate = useNavigate();
   
   const handleWithMedicare = () => {
+    onSelect("with-medicare");
     onClose();
     navigate(`/register?type=emergency&medicareChoice=with-medicare`);
   };
   
   const handleWithoutMedicare = () => {
+    onSelect("without-medicare");
     onClose();
     navigate(`/register?type=emergency&medicareChoice=without-medicare`);
   };

@@ -1,6 +1,5 @@
 import styled, { keyframes, css } from 'styled-components';
 import { theme } from '../styles/theme';
-import { PageLayout } from './Layout/PageLayout';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { EmergencyBanner } from './shared/EmergencyBanner';
 import { Header } from './shared/Header';
@@ -56,21 +55,9 @@ const Container = styled.div`
   padding-bottom: calc(${theme.spacing.xlarge} * 3);
 `;
 
-const Title = styled.h1`
-  font-family: ${theme.typography.fontFamily.header};
-  font-size: ${theme.typography.fontSize.h1};
-  color: ${theme.colors.text.primary};
-  margin-bottom: ${theme.spacing.medium};
-  font-weight: 600;
-`;
 
-const Subtitle = styled.p`
-  font-size: ${theme.typography.fontSize.body};
-  color: ${theme.colors.text.secondary};
-  line-height: 1.5;
-  max-width: 320px;
-  margin: 0 auto;
-`;
+
+
 
 const NewUserCard = styled.div<{ isEmergency?: boolean }>`
   background: ${theme.colors.primary};
@@ -135,19 +122,7 @@ const CardDescription = styled.p<{ isEmergency?: boolean }>`
   margin-right: auto;
 `;
 
-const PreviousAction = styled.div`
-  font-size: ${theme.typography.fontSize.small};
-  opacity: 0.8;
-  margin-bottom: ${theme.spacing.medium};
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.small};
-  
-  &::before {
-    content: '←';
-    font-size: 14px;
-  }
-`;
+
 
 const PrimaryButton = styled.button`
   width: 100%;
@@ -392,10 +367,6 @@ export const RegistrationChoiceScreen = () => {
   const [showMedicareModal, setShowMedicareModal] = useState(false);
   const returningUserSectionRef = useRef<HTMLDivElement>(null);
   
-  const handleContinueAsNew = () => {
-    navigate(`/register?type=${searchParams.get('type')}&isNew=true`);
-  };
-
   const handleEmergencyRegistration = () => {
     // Show Medicare options modal instead of direct navigation
     setShowMedicareModal(true);

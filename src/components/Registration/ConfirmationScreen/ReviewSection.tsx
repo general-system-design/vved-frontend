@@ -1,5 +1,5 @@
 import React from 'react';
-import { RegistrationData } from '../types';
+import { RegistrationData } from '../types/index';
 import { getIconComponent } from './SectionIcons';
 import { createSectionSummary } from './utils';
 import {

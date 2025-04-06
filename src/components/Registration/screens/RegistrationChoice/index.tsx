@@ -26,9 +26,8 @@ export const RegistrationChoiceScreen: React.FC = () => {
     }
   };
 
-  const handleAccountCreation = (createAccount: boolean, password: string) => {
-    setShowAccountModal(false);
-    navigate(`/register?type=${searchParams.get('type')}&isNew=true&hasAccount=true`);
+  const handleAccountCreation = () => {
+    navigate('/triage');
   };
 
   const handleSwitchToEmergency = () => {
@@ -67,8 +66,11 @@ export const RegistrationChoiceScreen: React.FC = () => {
         <AccountCreationModal
           onClose={() => setShowAccountModal(false)}
           onComplete={handleAccountCreation}
-          registrationData={{}}
-          context="pre-registration"
+          registrationData={{
+            gpName: '',
+            gpDetails: '',
+            email: ''
+          }}
         />
       )}
     </PageLayout>

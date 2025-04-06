@@ -16,7 +16,7 @@ const initialStep: RegistrationStep = {
   field: 'isThirdParty',
   type: 'select',
   options: ['For myself', 'For someone else'],
-  validation: (value: string | RegistrationData, formData?: RegistrationData) => {
+  validation: (value: string | RegistrationData) => {
     if (!value) return 'Please select who you are registering';
     return undefined;
   },

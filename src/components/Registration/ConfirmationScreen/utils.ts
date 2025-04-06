@@ -1,4 +1,4 @@
-import type { RegistrationData } from '../types';
+import type { RegistrationData } from '../types/index';
 
 export const getFieldLabel = (field: string): string => {
   const labels: Record<string, string> = {
@@ -217,4 +217,4 @@ export const createSectionSummary = (
     default:
       return { narrative: "Information not available" };
   }
-}; 
+};

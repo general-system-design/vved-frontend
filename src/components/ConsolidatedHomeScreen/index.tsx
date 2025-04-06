@@ -26,8 +26,6 @@ import {
   ForgotPassword,
   SecureLoginNote,
   LockIcon,
-  InfoBox,
-  InfoText,
   EmergencyBannerContainer,
   ArrowIcon,
   TrustContainer,
@@ -37,7 +35,6 @@ import {
   PreRegisterSubtext,
   PreRegisterArrow
 } from './styles';
-import { Logo } from '../InitialChoiceScreen/Logo';
 
 interface ConsolidatedHomeScreenProps {
   onEmergencyRegistration?: () => void;
@@ -45,7 +42,6 @@ interface ConsolidatedHomeScreenProps {
 }
 
 export const ConsolidatedHomeScreen = ({
-  onEmergencyRegistration,
   onPreRegister
 }: ConsolidatedHomeScreenProps) => {
   const navigate = useNavigate();
@@ -121,6 +117,7 @@ export const ConsolidatedHomeScreen = ({
     // Handle login logic here
     navigate('/auth');
   };
+
 
   return (
     <ScreenContainer>

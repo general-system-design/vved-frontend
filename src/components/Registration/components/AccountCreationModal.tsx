@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 import type { RegistrationData } from '../types/index';
 
-const Modal = styled.div`
+const Container = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -106,12 +106,6 @@ const Title = styled.h2`
   }
 `;
 
-const Description = styled.p`
-  color: ${theme.colors.text.secondary};
-  font-size: 16px;
-  margin-bottom: ${theme.spacing.large};
-  line-height: 1.6;
-`;
 
 const Form = styled.div`
   display: flex;
@@ -123,39 +117,6 @@ const Form = styled.div`
   }
 `;
 
-const AccountToggle = styled.button<{ active: boolean }>`
-  background: ${props => props.active ? `${theme.colors.primary}10` : 'white'};
-  border: 1.5px solid ${props => props.active ? theme.colors.primary : theme.colors.text.disabled};
-  border-radius: ${theme.borderRadius.medium};
-  padding: ${theme.spacing.medium} ${theme.spacing.large};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: ${props => props.active ? `${theme.colors.primary}15` : `${theme.colors.primary}05`};
-    transform: translateY(-1px);
-  }
-`;
-
-const ToggleText = styled.div`
-  text-align: left;
-`;
-
-const ToggleTitle = styled.div`
-  font-weight: 600;
-  color: ${theme.colors.text.primary};
-  margin-bottom: 4px;
-  font-size: 18px;
-`;
-
-const ToggleDescription = styled.div`
-  font-size: 14px;
-  color: ${theme.colors.text.secondary};
-`;
 
 const PasswordInputWrapper = styled.div`
   position: relative;
@@ -339,12 +300,6 @@ const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
   }
 `;
 
-const SkipText = styled.div`
-  text-align: center;
-  color: ${theme.colors.text.secondary};
-  font-size: 13px;
-  margin-top: ${theme.spacing.small};
-`;
 
 interface Props {
   onClose: () => void;
@@ -361,7 +316,6 @@ export const AccountCreationModal: React.FC<Props> = ({
   registrationData,
   context = 'post-visit'
 }) => {
-  const [createAccount, setCreateAccount] = useState(true);
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState(registrationData.email || '');
   const [showPassword, setShowPassword] = useState(false);
@@ -478,7 +432,7 @@ export const AccountCreationModal: React.FC<Props> = ({
   const contextContent = getContextualContent();
 
   return (
-    <Modal>
+    <Container>
       <ModalContent>
         <CloseButton onClick={onClose} aria-label="Close modal">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -591,6 +545,6 @@ export const AccountCreationModal: React.FC<Props> = ({
           )}
         </Actions>
       </ModalContent>
-    </Modal>
+    </Container>
   );
 }; 

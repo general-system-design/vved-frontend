@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { PageLayout } from '../../Layout/PageLayout';
 import { Header } from '../../shared/Header';
 import { EmergencyBanner } from '../../shared/EmergencyBanner';
 import { registrationSteps } from '../steps';
-import type { RegistrationData } from '../types';
+import type { RegistrationData, GPDetails } from '../types/index';
 import { loadGPData, getGPById } from '../../../utils/gpDataLoader';
 import { AccountCreationModal } from '../components/AccountCreationModal';
 import { ProgressIndicator } from '../components/ProgressIndicator';
@@ -27,12 +27,9 @@ export const ConfirmationScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [gpDetails, setGpDetails] = useState<any>(null);
+  const [gpDetails, setGpDetails] = useState<GPDetails | null>(null);
   const [isLoadingGP, setIsLoadingGP] = useState(true);
-  const [sectionsReviewed, setSectionsReviewed] = useState<Set<string>>(new Set());
-  const [canSubmit, setCanSubmit] = useState(false);
-  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
-  const reviewContentRef = useRef<HTMLDivElement>(null);
+  const [sectionsReviewed] = useState<Set<string>>(new Set());
   const [showAccountModal, setShowAccountModal] = useState(false);
   
   const isEmergency = searchParams.get('type') === 'emergency';
@@ -73,44 +70,24 @@ export const ConfirmationScreen = () => {
   }, [registrationData.gpName, registrationData.gpDetails]);
 
   useEffect(() => {
-    const totalSections = Object.keys(registrationSteps.reduce((acc, step) => {
+    Object.keys(registrationSteps.reduce((acc, step) => {
       if (!step.section) return acc;
       if (!acc[step.section]) acc[step.section] = true;
       return acc;
-    }, {} as Record<string, boolean>)).length;
-
-    setCanSubmit(sectionsReviewed.size === totalSections);
+    }, {} as Record<string, boolean>));
   }, [sectionsReviewed, registrationSteps]);
 
   const handleSubmit = () => {
     setShowAccountModal(true);
   };
 
-  const handleCompleteRegistration = (createAccount: boolean, password: string) => {
-    const submissionData = {
-      ...registrationData,
-      ...(createAccount && password ? {
-        accountDetails: {
-          email: registrationData.email,
-          password
-        }
-      } : {})
-    };
-    
+  const handleCompleteRegistration = () => {
     navigate('/triage');
   };
 
   const shouldShowSection = (sectionName: string): boolean => {
     return sectionName === "Registration Type" || 
       !(registrationData.isThirdParty === 'For myself' && sectionName === "Registrant Details");
-  };
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const element = e.target as HTMLDivElement;
-    const isAtBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 100;
-    if (isAtBottom && !hasScrolledToBottom) {
-      setHasScrolledToBottom(true);
-    }
   };
 
   const currentStep = 3;

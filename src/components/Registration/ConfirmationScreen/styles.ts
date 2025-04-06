@@ -326,9 +326,6 @@ export const InfoText = styled.div`
   line-height: 1.5;
 `;
 
-interface SubmitButtonContainerProps {
-  isEmergency: boolean;
-}
 
 export const SubmitButtonContainer = styled.div`
   position: fixed;

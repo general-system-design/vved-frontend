@@ -27,7 +27,7 @@ export const emergencyContactSteps: RegistrationStep[] = [
     },
     field: 'nokName',
     type: 'multifield',
-    validation: (value: string | RegistrationData, formData?: RegistrationData) => {
+    validation: (value: string | RegistrationData) => {
       // When validating the entire form data
       if (typeof value !== 'string') {
         if (!value.nokName?.trim()) return 'Please enter a name';

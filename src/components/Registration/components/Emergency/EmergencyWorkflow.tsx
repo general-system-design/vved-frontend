@@ -27,29 +27,6 @@ const ContentContainer = styled.div`
   animation: ${fadeIn} 0.6s ease-out;
 `;
 
-const TitleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: ${theme.spacing.xlarge};
-`;
-
-const MainTitle = styled.h1`
-  font-size: 28px;
-  font-weight: 600;
-  color: ${theme.colors.text.primary};
-  margin: 0;
-  line-height: 1.2;
-`;
-
-const DepartmentText = styled.h1`
-  font-size: 28px;
-  font-weight: 600;
-  color: ${theme.colors.primary};
-  margin: 0;
-  line-height: 1.2;
-`;
 
 interface EmergencyWorkflowProps {
   onExistingUser: () => void;

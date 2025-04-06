@@ -139,7 +139,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
 
   const renderInput = (step: RegistrationStep) => {
     const field = step.field as string;
-    const value = (currentInputs[field]?.toString() || formData[field]?.toString() || '') as string;
+    const value = (currentInputs[field as keyof RegistrationData]?.toString() || formData[field as keyof RegistrationData]?.toString() || '') as string;
     const hasError = !!error && !isTransitioning && step.validation && step.validation(value, formData) === error;
 
     // Special handling for current location map
@@ -222,7 +222,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
         return (
           <>
             {step.fields?.map((field) => {
-              const fieldValue = currentInputs[field.field]?.toString() || formData[field.field]?.toString() || '';
+              const fieldValue = currentInputs[field.field as keyof RegistrationData]?.toString() || formData[field.field as keyof RegistrationData]?.toString() || '';
               const hasFieldError = !!error && !isTransitioning && step.validation && 
                 step.validation({ ...formData, [field.field]: fieldValue }, formData) === error;
 
@@ -434,7 +434,7 @@ export const QuestionForm: React.FC<QuestionFormProps> = ({
     // Get all possible validation errors for current steps
     const possibleErrors = currentSteps.map(step => {
       if (!step.validation) return [];
-      const value = (currentInputs[step.field]?.toString() || formData[step.field]?.toString() || '') as string;
+      const value = (currentInputs[step.field as keyof RegistrationData]?.toString() || formData[step.field as keyof RegistrationData]?.toString() || '') as string;
       const validationError = step.validation(value, formData);
       return validationError || '';
     }).filter(Boolean);

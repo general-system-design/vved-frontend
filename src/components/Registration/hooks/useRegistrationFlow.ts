@@ -50,11 +50,6 @@ export const useRegistrationFlow = () => {
 
   const progress = getProgress();
 
-  const validateAnswer = useCallback((value: string, step: typeof currentStep, formData: RegistrationData, currentInputs?: Partial<RegistrationData>) => {
-    if (!step.validation) return undefined;
-    return step.validation(value, formData, currentInputs);
-  }, []);
-
   const validateAnswers = useCallback((answers: Record<string, string>): { 
     success: boolean; 
     error?: string;
