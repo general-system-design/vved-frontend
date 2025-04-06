@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageLayout } from '../Layout/PageLayout';
 import { useRegistrationFlow } from './hooks/useRegistrationFlow';
@@ -15,7 +15,10 @@ import { MedicareForm } from './components/Medicare/MedicareForm';
 export const ConversationalRegistration = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [showWelcome, setShowWelcome] = useState(true);
+  // Check for medicareChoice in URL parameters
+  const medicareChoiceParam = searchParams.get('medicareChoice') as 'with-medicare' | 'without-medicare' | 'not-eligible' | null;
+  // Skip welcome screen if medicareChoice is provided in URL
+  const [showWelcome, setShowWelcome] = useState(!medicareChoiceParam);
   const [currentInputs, setCurrentInputs] = useState<Partial<RegistrationData>>({});
   const [hasInteracted, setHasInteracted] = useState(false);
   const isEmergency = searchParams.get('type') === 'emergency';
@@ -47,35 +50,47 @@ export const ConversationalRegistration = () => {
 
   const { getAddressFromCoordinates, searchAddress, isLoading: isMapboxLoading } = useMapbox();
 
-  const handleInputChange = async (field: keyof RegistrationData, value: string) => {
-    console.group('handleInputChange');
-    console.log('Field:', field);
-    console.log('Value:', value);
-    console.log('Current form data:', formData);
-    console.log('Current inputs:', currentInputs);
-    
-    setCurrentInputs(prev => {
-      const newInputs = {
+  // Initialize with medicareChoice from URL if available
+  useEffect(() => {
+    if (medicareChoiceParam) {
+      setFormData((prev: RegistrationData) => ({
         ...prev,
-        [field]: value
-      };
-      console.log('New inputs:', newInputs);
-      return newInputs;
-    });
+        medicareChoice: medicareChoiceParam,
+        hasMedicareCard: medicareChoiceParam === 'with-medicare' ? 'Yes' : 'No'
+      }));
+    }
+  }, [medicareChoiceParam, setFormData]);
 
-    // For select fields that are part of a multi-field step, don't auto-progress
-    const isMultiFieldStep = currentSteps.length > 1;
-    if (currentStep.type === 'select' && !isMultiFieldStep) {
-      const answer = {
-        [field]: value
-      };
+  const handleInputChange = async (field: keyof RegistrationData, value: string) => {
+    // Update the current inputs
+    setCurrentInputs(prev => ({
+      ...prev,
+      [field]: value
+    }));
 
-      const result = validateAnswers(answer);
-      if (result.success) {
-        await handleTransition(answer);
+    // Reset error when user starts typing
+    setHasInteracted(true);
+
+    // Special handling for address fields
+    if (field === 'streetAddress' || field === 'currentStreetAddress') {
+      // Only search if we have at least 5 characters
+      if (value.length >= 5) {
+        setIsLoadingLocation(true);
+        setLocationError(undefined);
+        try {
+          const results = await searchAddress(value);
+          setAddressSuggestions(results);
+          setShowSuggestions(results.length > 0);
+        } catch (err) {
+          console.error('Error searching address:', err);
+          setLocationError('Unable to search for addresses');
+        } finally {
+          setIsLoadingLocation(false);
+        }
+      } else {
+        setShowSuggestions(false);
       }
     }
-    console.groupEnd();
   };
 
   const handleTransition = async (answer: Record<string, string>) => {
@@ -340,12 +355,12 @@ export const ConversationalRegistration = () => {
   };
 
   // Add logging for error and hasInteracted state changes
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('State changed - error:', error, 'hasInteracted:', hasInteracted, 'currentStep:', currentStep);
   }, [error, hasInteracted, currentStep]);
 
   // Handle navigation to confirmation screen
-  React.useEffect(() => {
+  useEffect(() => {
     if (isComplete) {
       const timer = setTimeout(() => {
         navigate('/confirmation', {

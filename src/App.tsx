@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { theme } from './styles/theme';
-import { InitialChoiceScreen } from './components/InitialChoiceScreen';
+import { ConsolidatedHomeScreen } from './components/ConsolidatedHomeScreen';
 import { AuthScreen } from './components/AuthScreen';
 import { RegistrationChoiceScreen } from './components/RegistrationChoiceScreen';
 import { TriageQuestionScreen } from './components/TriageQuestionScreen';
@@ -32,16 +32,15 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-// Wrap InitialChoiceScreen to handle navigation
-const InitialScreen = () => {
+// Wrap ConsolidatedHomeScreen to handle navigation
+const HomeScreen = () => {
   const navigate = useNavigate();
   
-  const handleEmergency = () => navigate('/registration-choice?type=emergency');
-  const handlePreRegister = () => navigate('/registration-choice?type=pre-register');
+  // Navigate to pre-registration
+  const handlePreRegister = () => navigate('/register?type=pre-register');
   
   return (
-    <InitialChoiceScreen 
-      onEmergency={handleEmergency}
+    <ConsolidatedHomeScreen 
       onPreRegister={handlePreRegister}
     />
   );
@@ -52,7 +51,7 @@ function App() {
     <BrowserRouter>
       <GlobalStyle />
       <Routes>
-        <Route path="/" element={<InitialScreen />} />
+        <Route path="/" element={<HomeScreen />} />
         <Route path="/registration-choice" element={<RegistrationChoiceScreen />} />
         <Route path="/auth" element={<AuthScreen />} />
         <Route path="/triage" element={<TriageQuestionScreen />} />

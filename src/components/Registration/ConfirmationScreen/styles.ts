@@ -191,6 +191,14 @@ export const SectionContent = styled.div`
   margin-top: 0;
 `;
 
+export const NarrativeText = styled.p`
+  color: ${theme.colors.text.primary};
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: ${theme.spacing.medium};
+  margin-bottom: ${theme.spacing.medium};
+`;
+
 export const DetailsList = styled.div`
   display: flex;
   flex-direction: column;
